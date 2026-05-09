@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM 모델 파라미터 & 용도 시각화</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #22263a;
+    --border: #2e3250;
+    --accent: #7c6af7;
+    --accent2: #56cfb2;
+    --accent3: #f7a35c;
+    --accent4: #e95f5f;
+    --text: #e8eaf6;
+    --text-muted: #8892b0;
+    --text-dim: #4a5580;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Pretendard', 'Apple SD Gothic Neo', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* ── Header ── */
+  header {
+    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 2rem 2rem 1.5rem;
+    text-align: center;
+  }
+  header h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  header p {
+    color: var(--text-muted);
+    margin-top: .5rem;
+    font-size: .95rem;
+  }
+  .updated {
+    display: inline-block;
+    margin-top: .75rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: .25rem .9rem;
+    font-size: .78rem;
+    color: var(--text-dim);
+  }
+
+  /* ── Layout ── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  /* ── Section titles ── */
+  .section-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin-bottom: 1.2rem;
+  }
+  .section-title .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    flex-shrink: 0;
+  }
+
+  /* ── Cards / Panels ── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+
+  /* ── Stat summary row ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+  }
+  .stat-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.3rem;
+    text-align: center;
+    transition: border-color .2s;
+  }
+  .stat-card:hover { border-color: var(--accent); }
+  .stat-card .val {
+    font-size: 1.9rem;
+    font-weight: 800;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .stat-card .label {
+    font-size: .78rem;
+    color: var(--text-muted);
+    margin-top: .2rem;
+  }
+
+  /* ── Filters ── */
+  .filter-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .6rem;
+    align-items: center;
+  }
+  .filter-bar label { color: var(--text-muted); font-size: .85rem; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .chip {
+    padding: .35rem .85rem;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .chip.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .chip:hover:not(.active) { border-color: var(--accent); color: var(--text); }
+
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .88rem;
+  }
+  thead th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: .75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+  }
+  thead th:hover { color: var(--text); }
+  thead th .sort-icon { opacity: .4; margin-left: .3rem; font-size: .75rem; }
+  thead th.sort-asc .sort-icon::after { content: '▲'; opacity: 1; }
+  thead th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
+  thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .15s;
+    cursor: pointer;
+  }
+  tbody tr:hover { background: var(--surface2); }
+  tbody tr.hidden { display: none; }
+  td { padding: .7rem 1rem; vertical-align: middle; }
+  td.name { font-weight: 600; color: var(--text); }
+  td.org { color: var(--text-muted); font-size: .82rem; }
+
+  .badge {
+    display: inline-block;
+    padding: .2rem .55rem;
+    border-radius: 6px;
+    font-size: .75rem;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .badge-open { background: #1a3a2a; color: #56cfb2; border: 1px solid #2a5a4a; }
+  .badge-closed { background: #2a1a3a; color: #a07cf7; border: 1px solid #4a2a6a; }
+  .badge-partial { background: #3a2a1a; color: #f7a35c; border: 1px solid #6a4a2a; }
+
+  /* param bar */
+  .param-bar-wrap { display: flex; align-items: center; gap: .6rem; min-width: 160px; }
+  .param-bar {
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    transition: width .4s ease;
+    min-width: 2px;
+  }
+  .param-val { font-size: .82rem; color: var(--text); white-space: nowrap; }
+
+  /* context bar */
+  .ctx-bar {
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent4));
+    min-width: 2px;
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  /* use-case tags */
+  .use-tag {
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: 5px;
+    font-size: .73rem;
+    margin: .1rem .1rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+
+  /* ── Chart grid ── */
+  .chart-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+  }
+  .chart-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+  }
+  .chart-box h3 {
+    font-size: .9rem;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    font-weight: 600;
+  }
+  .chart-wrap { position: relative; height: 280px; }
+
+  /* ── Timeline ── */
+  .timeline {
+    position: relative;
+    padding-left: 2rem;
+  }
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: .45rem;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--border);
+  }
+  .tl-item {
+    position: relative;
+    margin-bottom: 1.2rem;
+    opacity: 0;
+    transform: translateX(-10px);
+    transition: all .4s ease;
+  }
+  .tl-item.visible { opacity: 1; transform: none; }
+  .tl-dot {
+    position: absolute;
+    left: -1.7rem;
+    top: .3rem;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .tl-date {
+    font-size: .75rem;
+    color: var(--text-dim);
+    margin-bottom: .2rem;
+  }
+  .tl-content {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .7rem 1rem;
+    font-size: .85rem;
+  }
+  .tl-title { font-weight: 700; color: var(--text); }
+  .tl-desc { color: var(--text-muted); font-size: .8rem; margin-top: .2rem; }
+
+  /* ── Use-case cards ── */
+  .usecase-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+  }
+  .usecase-card {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.2rem;
+    transition: all .2s;
+    cursor: default;
+  }
+  .usecase-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .usecase-card .uc-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+  .usecase-card .uc-title { font-weight: 700; font-size: .95rem; color: var(--text); }
+  .usecase-card .uc-range {
+    font-size: .78rem;
+    color: var(--accent2);
+    margin: .3rem 0 .5rem;
+    font-weight: 600;
+  }
+  .usecase-card .uc-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
+  .uc-models { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .7rem; }
+  .uc-model-pill {
+    font-size: .72rem;
+    padding: .15rem .5rem;
+    border-radius: 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+  }
+
+  /* ── Detail modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.7);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    max-width: 560px;
+    width: 100%;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal h2 { font-size: 1.4rem; margin-bottom: .3rem; }
+  .modal-org { color: var(--text-muted); font-size: .9rem; margin-bottom: 1rem; }
+  .modal-close {
+    position: absolute;
+    top: 1rem; right: 1.2rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--text); }
+  .modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .7rem;
+    margin-bottom: 1rem;
+  }
+  .modal-stat {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: .8rem;
+    text-align: center;
+  }
+  .modal-stat .ms-val { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
+  .modal-stat .ms-label { font-size: .72rem; color: var(--text-muted); margin-top: .2rem; }
+  .modal-section { margin-top: 1rem; }
+  .modal-section h4 { font-size: .85rem; color: var(--text-muted); margin-bottom: .4rem; font-weight: 600; }
+  .modal-section p { font-size: .88rem; color: var(--text); line-height: 1.6; }
+
+  /* ── Footer ── */
+  footer {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-dim);
+    font-size: .8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── Search ── */
+  .search-input {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .45rem .9rem;
+    color: var(--text);
+    font-size: .88rem;
+    outline: none;
+    width: 200px;
+  }
+  .search-input:focus { border-color: var(--accent); }
+  .search-input::placeholder { color: var(--text-dim); }
+
+  @media (max-width: 600px) {
+    header h1 { font-size: 1.5rem; }
+    .chart-grid { grid-template-columns: 1fr; }
+    .modal-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>LLM 모델 파라미터 & 용도 시각화</h1>
+  <p>주요 대형 언어 모델의 규모, 구조, 적용 분야를 한눈에 비교하세요</p>
+  <span class="updated">기준일: 2025년 5월 &nbsp;|&nbsp; 모델 수: <span id="modelCount">0</span>개</span>
+</header>
+
+<main>
+
+  <!-- 요약 통계 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>핵심 지표 요약</div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="val">24</div><div class="label">수록 모델 수</div></div>
+      <div class="stat-card"><div class="val">1.8T</div><div class="label">최대 파라미터 (GPT-4 추정)</div></div>
+      <div class="stat-card"><div class="val">1M</div><div class="label">최대 컨텍스트 (Gemini 1.5 Pro)</div></div>
+      <div class="stat-card"><div class="val">8개</div><div class="label">수록 기관/기업</div></div>
+      <div class="stat-card"><div class="val">2017→</div><div class="label">Transformer 등장 이후</div></div>
+    </div>
+  </div>
+
+  <!-- 모델 테이블 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>전체 모델 목록</div>
+    <div class="filter-bar" style="margin-bottom:1rem; gap:.8rem;">
+      <input class="search-input" id="searchInput" type="text" placeholder="모델명 검색…">
+      <label>기관:</label>
+      <div class="chip-group" id="orgFilter"></div>
+      <label>오픈소스:</label>
+      <div class="chip-group" id="openFilter">
+        <span class="chip active" data-open="all">전체</span>
+        <span class="chip" data-open="open">공개</span>
+        <span class="chip" data-open="closed">비공개</span>
+        <span class="chip" data-open="partial">부분공개</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <table id="modelTable">
+        <thead>
+          <tr>
+            <th data-col="name">모델명 <span class="sort-icon"></span></th>
+            <th data-col="org">기관 <span class="sort-icon"></span></th>
+            <th data-col="params">파라미터 <span class="sort-icon"></span></th>
+            <th data-col="context">컨텍스트 길이 <span class="sort-icon"></span></th>
+            <th data-col="year">출시연도 <span class="sort-icon"></span></th>
+            <th>오픈소스</th>
+            <th>주요 용도</th>
+          </tr>
+        </thead>
+        <tbody id="modelBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- 차트 -->
+  <div class="chart-grid">
+    <div class="chart-box">
+      <h3>📊 기관별 파라미터 규모 비교 (대표 모델)</h3>
+      <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🥧 오픈소스 현황 분포</h3>
+      <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>📈 연도별 최대 파라미터 성장 추이</h3>
+      <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>🔵 파라미터 vs 컨텍스트 길이 (버블)</h3>
+      <div class="chart-wrap"><canvas id="bubbleChart"></canvas></div>
+    </div>
+  </div>
+
+  <!-- 용도별 가이드 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>파라미터 규모별 적합 용도</div>
+    <div class="usecase-grid" id="usecaseGrid"></div>
+  </div>
+
+  <!-- 타임라인 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>LLM 발전 타임라인</div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+</main>
+
+<footer>
+  데이터는 공개된 논문·발표 자료를 기반으로 작성되었습니다. 일부 수치(특히 GPT-4)는 추정값입니다.<br>
+  Built with Chart.js &nbsp;·&nbsp; <a href="https://github.com/Homangla/llm-viz" style="color:var(--accent);">GitHub</a>
+</footer>
+
+<!-- 모달 -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" id="modalClose">×</button>
+    <h2 id="mTitle"></h2>
+    <div class="modal-org" id="mOrg"></div>
+    <div class="modal-grid" id="mGrid"></div>
+    <div class="modal-section" id="mUses"></div>
+    <div class="modal-section" id="mDesc"></div>
+    <div class="modal-section" id="mStrength"></div>
+  </div>
+</div>
+
+<script>
+// ─── Data ───────────────────────────────────────────────────────────────────
+const MODELS = [
+  {
+    id:'gpt4', name:'GPT-4', org:'OpenAI', year:2023,
+    params:1800, paramsLabel:'~1.8T (추정)', paramsB:1800,
+    context:128000, contextLabel:'128K',
+    open:'closed', openLabel:'비공개',
+    uses:['코드 생성','복잡한 추론','멀티모달','에이전트','법률/의료 문서'],
+    desc:'OpenAI의 최상위 모델. 멀티모달(텍스트+이미지) 입력을 지원하며 전문 분야 시험에서 인간 수준의 성능을 보임.',
+    strength:'복잡한 다단계 추론, 코드 작성, 창의적 작문, 전문 도메인 질의응답'
+  },
+  {
+    id:'gpt35', name:'GPT-3.5 Turbo', org:'OpenAI', year:2022,
+    params:175, paramsLabel:'175B', paramsB:175,
+    context:16000, contextLabel:'16K',
+    open:'closed', openLabel:'비공개',
+    uses:['대화형 챗봇','요약','번역','코드 보조','고객 지원'],
+    desc:'ChatGPT에 사용된 대화 특화 모델. 빠른 응답속도와 합리적 비용으로 상업적 활용에 최적화.',
+    strength:'범용 대화, 요약, 번역, 간단한 코드 작성'
+  },
+  {
+    id:'gpt3', name:'GPT-3', org:'OpenAI', year:2020,
+    params:175, paramsLabel:'175B', paramsB:175,
+    context:4096, contextLabel:'4K',
+    open:'closed', openLabel:'비공개',
+    uses:['텍스트 생성','퓨샷 학습','번역','질의응답'],
+    desc:'Few-shot learning의 가능성을 세상에 알린 모델. 방대한 파라미터로 프롬프트만으로 다양한 작업 수행.',
+    strength:'텍스트 생성, 퓨샷 러닝, 다양한 NLP 작업'
+  },
+  {
+    id:'o3', name:'o3 / o4-mini', org:'OpenAI', year:2025,
+    params:null, paramsLabel:'미공개', paramsB:500,
+    context:200000, contextLabel:'200K',
+    open:'closed', openLabel:'비공개',
+    uses:['수학/과학 추론','코딩 경쟁','연구 보조','복잡한 계획'],
+    desc:'강화학습 기반 추론 특화 모델. 수학·코딩·과학 분야에서 압도적 성능. 느리지만 정확도 최우선.',
+    strength:'수학 증명, 알고리즘 설계, 다단계 과학 문제 풀이'
+  },
+  {
+    id:'claude3opus', name:'Claude 3 Opus', org:'Anthropic', year:2024,
+    params:null, paramsLabel:'미공개', paramsB:300,
+    context:200000, contextLabel:'200K',
+    open:'closed', openLabel:'비공개',
+    uses:['복잡한 분석','코드 생성','연구 지원','장문 처리','안전 AI'],
+    desc:'Anthropic의 최고 성능 모델. Constitutional AI로 안전성 강화. 200K 토큰 컨텍스트로 긴 문서 처리에 강점.',
+    strength:'긴 문서 분석, 복잡한 코딩, 연구 보조, 안전성 중요 애플리케이션'
+  },
+  {
+    id:'claude35', name:'Claude 3.5 Sonnet', org:'Anthropic', year:2024,
+    params:null, paramsLabel:'미공개', paramsB:200,
+    context:200000, contextLabel:'200K',
+    open:'closed', openLabel:'비공개',
+    uses:['코딩','데이터 분석','창의적 작문','대화','에이전트'],
+    desc:'성능과 속도의 균형을 맞춘 Anthropic의 대표 모델. 코딩 작업에서 GPT-4를 능가하는 벤치마크 기록.',
+    strength:'코드 작성 및 디버깅, 데이터 분석, 복잡한 지시 따르기'
+  },
+  {
+    id:'gemini15pro', name:'Gemini 1.5 Pro', org:'Google DeepMind', year:2024,
+    params:null, paramsLabel:'미공개', paramsB:500,
+    context:1000000, contextLabel:'1M',
+    open:'closed', openLabel:'비공개',
+    uses:['장문서 분석','멀티모달','코드 분석','비디오 이해','과학 연구'],
+    desc:'1M 토큰 컨텍스트 창으로 책 전체, 긴 영상, 대용량 코드베이스를 한 번에 처리. MoE 아키텍처 사용.',
+    strength:'초장문 문서/코드 분석, 비디오-텍스트 멀티모달, 대규모 컨텍스트 추론'
+  },
+  {
+    id:'gemini2flash', name:'Gemini 2.0 Flash', org:'Google DeepMind', year:2025,
+    params:null, paramsLabel:'미공개', paramsB:80,
+    context:1000000, contextLabel:'1M',
+    open:'closed', openLabel:'비공개',
+    uses:['실시간 대화','빠른 코딩','멀티모달','저비용 API'],
+    desc:'속도와 비용 효율에 최적화된 경량 버전. 실시간 애플리케이션과 대량 API 호출에 적합.',
+    strength:'빠른 응답이 필요한 실시간 서비스, 고빈도 API 호출'
+  },
+  {
+    id:'llama3405', name:'Llama 3.1 405B', org:'Meta', year:2024,
+    params:405, paramsLabel:'405B', paramsB:405,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['범용 추론','코드 생성','합성 데이터 생성','연구','파인튜닝 기반'],
+    desc:'Meta가 공개한 최대 규모 오픈소스 모델. GPT-4에 맞먹는 성능을 무료로 사용 가능. 연구 및 상업적 이용 허가.',
+    strength:'오픈소스 최고 성능 추론, 파인튜닝을 위한 강력한 기반, 합성 데이터 생성'
+  },
+  {
+    id:'llama3-70', name:'Llama 3.1 70B', org:'Meta', year:2024,
+    params:70, paramsLabel:'70B', paramsB:70,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['대화형 AI','코딩','요약','번역','로컬 배포'],
+    desc:'성능과 실용성의 균형. 고사양 GPU 1~2장으로 로컬 실행 가능한 최상위 오픈소스 모델.',
+    strength:'고성능 로컬 배포, 기업 내부 AI 서비스, 범용 NLP 작업'
+  },
+  {
+    id:'llama3-8', name:'Llama 3.1 8B', org:'Meta', year:2024,
+    params:8, paramsLabel:'8B', paramsB:8,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['엣지 배포','빠른 추론','파인튜닝','모바일','저비용 서비스'],
+    desc:'소비자급 GPU 또는 CPU로도 실행 가능한 경량 모델. RAG, 파인튜닝 실험의 기본 베이스라인으로 활용.',
+    strength:'자원 제약 환경, 엣지 컴퓨팅, 도메인 특화 파인튜닝'
+  },
+  {
+    id:'mistral7b', name:'Mistral 7B', org:'Mistral AI', year:2023,
+    params:7, paramsLabel:'7B', paramsB:7,
+    context:32000, contextLabel:'32K',
+    open:'open', openLabel:'공개',
+    uses:['코딩','추론','임베딩','파인튜닝','로컬 실행'],
+    desc:'출시 당시 같은 크기 모델 중 최고 성능. Sliding Window Attention으로 긴 컨텍스트를 효율적으로 처리.',
+    strength:'경량 고성능 베이스 모델, 도메인 특화 파인튜닝의 강력한 출발점'
+  },
+  {
+    id:'mixtral', name:'Mixtral 8×7B', org:'Mistral AI', year:2023,
+    params:47, paramsLabel:'~47B (활성 13B)', paramsB:47,
+    context:32000, contextLabel:'32K',
+    open:'open', openLabel:'공개',
+    uses:['다국어 처리','코딩','수학 추론','지식 기반 QA','고성능 오픈소스'],
+    desc:'Mixture of Experts(MoE) 구조. 총 47B 파라미터지만 추론 시 13B만 활성화되어 효율적. GPT-3.5 수준 성능.',
+    strength:'비용 대비 최고 성능, 다국어(영/불/독/스/이탈리아), 수학 추론'
+  },
+  {
+    id:'gemma2', name:'Gemma 2 27B', org:'Google', year:2024,
+    params:27, paramsLabel:'27B', paramsB:27,
+    context:8192, contextLabel:'8K',
+    open:'open', openLabel:'공개',
+    uses:['연구','파인튜닝','교육','온디바이스'],
+    desc:'Google의 책임감 있는 AI 연구용 경량 공개 모델 시리즈. Gemini 기술 기반으로 높은 효율성 달성.',
+    strength:'학술 연구, 파인튜닝 실험, 제한된 인프라 환경'
+  },
+  {
+    id:'phi3', name:'Phi-3 Medium', org:'Microsoft', year:2024,
+    params:14, paramsLabel:'14B', paramsB:14,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['코딩','수학','추론','모바일','엣지 AI'],
+    desc:'고품질 데이터로 훈련한 소형 모델. "작지만 강한" 철학으로 수학·코딩에서 훨씬 큰 모델에 필적.',
+    strength:'모바일/엣지 배포, 수학·코딩 특화 태스크, 저자원 환경'
+  },
+  {
+    id:'qwen25', name:'Qwen 2.5 72B', org:'Alibaba', year:2024,
+    params:72, paramsLabel:'72B', paramsB:72,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['중국어/영어 NLP','코딩','수학','멀티링구얼','에이전트'],
+    desc:'Alibaba의 대규모 다국어 모델. 중영 이중 언어에서 최고 성능. 수학·코딩 벤치마크에서 GPT-4 수준.',
+    strength:'중국어 포함 다국어 처리, 수학·코딩, 동아시아 언어 특화'
+  },
+  {
+    id:'deepseekr1', name:'DeepSeek-R1', org:'DeepSeek', year:2025,
+    params:671, paramsLabel:'671B (MoE)', paramsB:671,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['수학 증명','코딩 경쟁','과학 추론','연구'],
+    desc:'중국 DeepSeek이 공개한 추론 특화 오픈소스 모델. o1 수준의 추론 능력을 훨씬 적은 비용으로 달성해 충격.',
+    strength:'수학·과학 추론, 복잡한 코딩 문제, 오픈소스 최강 추론 모델'
+  },
+  {
+    id:'deepseekv3', name:'DeepSeek-V3', org:'DeepSeek', year:2024,
+    params:671, paramsLabel:'671B (MoE)', paramsB:671,
+    context:128000, contextLabel:'128K',
+    open:'open', openLabel:'공개',
+    uses:['코딩','범용 추론','다국어','저비용 배포'],
+    desc:'MoE 구조로 671B 전체 파라미터 중 추론 시 37B만 활성. GPT-4와 유사한 성능을 극도로 낮은 비용에 제공.',
+    strength:'비용 효율 극대화, 코딩, 범용 NLP'
+  },
+  {
+    id:'falcon180', name:'Falcon 180B', org:'TII', year:2023,
+    params:180, paramsLabel:'180B', paramsB:180,
+    context:2048, contextLabel:'2K',
+    open:'open', openLabel:'공개',
+    uses:['연구','NLP 기준점','텍스트 생성','파인튜닝 베이스'],
+    desc:'UAE Technology Innovation Institute의 대규모 공개 모델. 출시 당시 오픈소스 최대 규모.',
+    strength:'대규모 언어 모델 연구, 영어 텍스트 생성'
+  },
+  {
+    id:'bert', name:'BERT Large', org:'Google', year:2018,
+    params:0.34, paramsLabel:'340M', paramsB:0.34,
+    context:512, contextLabel:'512',
+    open:'open', openLabel:'공개',
+    uses:['텍스트 분류','NER','QA','감성 분석','파인튜닝 기반'],
+    desc:'Transformer Encoder 기반 양방향 언어 모델. 사전 학습 + 파인튜닝 패러다임을 정립한 역사적 모델.',
+    strength:'텍스트 분류, 개체명 인식, 시퀀스 레이블링, NLU 태스크'
+  },
+  {
+    id:'t5', name:'T5-11B', org:'Google', year:2020,
+    params:11, paramsLabel:'11B', paramsB:11,
+    context:512, contextLabel:'512',
+    open:'open', openLabel:'공개',
+    uses:['번역','요약','QA','텍스트 분류','다목적 NLP'],
+    desc:'모든 NLP 태스크를 텍스트-to-텍스트로 통합한 모델. 다양한 태스크를 단일 프레임워크로 처리.',
+    strength:'번역, 요약, 멀티태스크 파인튜닝'
+  },
+  {
+    id:'palm2', name:'PaLM 2', org:'Google', year:2023,
+    params:340, paramsLabel:'340B (추정)', paramsB:340,
+    context:32000, contextLabel:'32K',
+    open:'closed', openLabel:'비공개',
+    uses:['다국어','코딩','의료','수학','Google 제품 통합'],
+    desc:'Bard/Gemini 이전 Google의 주력 모델. 다국어 성능 및 의료·법률 도메인에서 강점.',
+    strength:'다국어 처리, 의료/법률 도메인, Workspace 통합'
+  },
+  {
+    id:'starcoder2', name:'StarCoder2 15B', org:'BigCode', year:2024,
+    params:15, paramsLabel:'15B', paramsB:15,
+    context:16000, contextLabel:'16K',
+    open:'open', openLabel:'공개',
+    uses:['코드 완성','코드 설명','버그 수정','코드 번역','개발 도구'],
+    desc:'600개 이상 프로그래밍 언어로 훈련된 코딩 특화 모델. IDE 플러그인, Copilot 대체재로 활용 가능.',
+    strength:'코드 자동완성, 다언어 코드 변환, 코드 문서화'
+  },
+  {
+    id:'whisper', name:'Whisper Large v3', org:'OpenAI', year:2023,
+    params:1.5, paramsLabel:'1.5B', paramsB:1.5,
+    context:null, contextLabel:'음성 30초',
+    open:'open', openLabel:'공개',
+    uses:['음성 인식','음성 번역','자막 생성','다국어 전사'],
+    desc:'99개 언어 음성 인식 및 번역. 한국어 포함 다국어 고정밀 전사. ASR 태스크 전용 모델.',
+    strength:'다국어 음성 인식, 음성→텍스트 번역, 실시간 자막'
+  },
+];
+
+const USECASES = [
+  {
+    icon:'📱', title:'엣지 / 온디바이스', range:'< 7B',
+    desc:'스마트폰, IoT 기기, 오프라인 환경에서 실행. 인터넷 없이 동작하며 프라이버시 보호에 유리.',
+    models:['Phi-3 Mini', 'Gemma 2B', 'Llama 3.2 3B', 'Mistral 7B']
+  },
+  {
+    icon:'🏢', title:'엔터프라이즈 로컬', range:'7B – 40B',
+    desc:'사내 서버에 배포해 API 비용 없이 내부 문서 QA, 코드 리뷰, 보고서 요약 등에 활용.',
+    models:['Mistral 7B', 'Llama 3.1 8B', 'Llama 3.1 70B', 'Mixtral 8x7B']
+  },
+  {
+    icon:'🔬', title:'연구 / 파인튜닝 기반', range:'7B – 70B',
+    desc:'논문 재현, 도메인 특화 파인튜닝의 출발점. 충분한 베이스라인 성능과 오픈 가중치 제공.',
+    models:['Llama 3.1 8/70B', 'Mistral 7B', 'Falcon 180B', 'BERT', 'T5']
+  },
+  {
+    icon:'💬', title:'대화형 서비스', range:'70B – 200B',
+    desc:'고객 지원, 챗봇, 개인 비서. 빠른 응답 속도와 자연스러운 대화 흐름이 핵심.',
+    models:['GPT-3.5 Turbo', 'Claude 3.5 Sonnet', 'Gemini 2.0 Flash']
+  },
+  {
+    icon:'💻', title:'코드 생성 & 디버깅', range:'7B – 전체',
+    desc:'GitHub Copilot 같은 코드 자동완성, 버그 수정, 코드 리뷰, 테스트 생성.',
+    models:['StarCoder2 15B', 'Claude 3.5 Sonnet', 'GPT-4', 'DeepSeek-R1']
+  },
+  {
+    icon:'🧮', title:'수학 / 과학 추론', range:'70B+ 또는 추론 특화',
+    desc:'수식 증명, 과학 논문 분석, 경쟁 알고리즘 문제. 단계별 논리적 사고가 필수.',
+    models:['o3/o4-mini', 'DeepSeek-R1', 'GPT-4', 'Llama 3.1 405B']
+  },
+  {
+    icon:'📄', title:'장문 문서 처리', range:'대형 컨텍스트',
+    desc:'계약서, 연구 논문, 전체 코드베이스를 한 번에 분석. 긴 컨텍스트 창이 핵심.',
+    models:['Gemini 1.5 Pro (1M)', 'Claude 3 Opus (200K)', 'o3 (200K)']
+  },
+  {
+    icon:'🌍', title:'다국어 처리', range:'70B+',
+    desc:'한국어·중국어·일본어 등 비영어권 언어의 번역, 이해, 생성에 특화.',
+    models:['Qwen 2.5 72B', 'Gemini 1.5 Pro', 'PaLM 2', 'GPT-4']
+  },
+  {
+    icon:'🖼️', title:'멀티모달 (텍스트+이미지)', range:'대형 모델',
+    desc:'이미지 이해, 차트 분석, 의료 영상, 제품 사진 설명 등 시각 정보 처리.',
+    models:['GPT-4o', 'Gemini 1.5 Pro', 'Claude 3 Opus']
+  },
+  {
+    icon:'🎙️', title:'음성 인식 / 전사', range:'전용 모델',
+    desc:'회의 녹음 전사, 다국어 자막 생성, 음성 번역. LLM이 아닌 전용 ASR 모델 사용.',
+    models:['Whisper Large v3']
+  },
+];
+
+const TIMELINE = [
+  { date:'2017년 6월', title:'Transformer 등장', desc:'「Attention is All You Need」 (Vaswani et al.) — 현대 LLM의 기반이 된 아키텍처 발표' },
+  { date:'2018년 10월', title:'BERT', desc:'Google이 Encoder 기반 양방향 언어 모델 공개. 파인튜닝 패러다임 정립' },
+  { date:'2019년 2월', title:'GPT-2 (1.5B)', desc:'OpenAI가 "너무 위험하다"며 처음에는 부분 공개만 진행한 텍스트 생성 모델' },
+  { date:'2020년 5월', title:'GPT-3 (175B)', desc:'Few-shot learning으로 AI 역사를 바꾼 모델. API로 처음 공개 제공' },
+  { date:'2022년 11월', title:'ChatGPT 출시', desc:'GPT-3.5 기반 대화형 인터페이스. 출시 5일 만에 100만 사용자 달성' },
+  { date:'2023년 2월', title:'LLaMA 1 공개', desc:'Meta의 첫 오픈소스 LLM. 연구 커뮤니티에 유출되며 오픈소스 생태계 폭발' },
+  { date:'2023년 3월', title:'GPT-4 출시', desc:'멀티모달 지원, 전문 시험에서 인간 상위 10% 수준 성능 달성' },
+  { date:'2023년 9월', title:'Mistral 7B', desc:'"작지만 강한" 7B 모델. 같은 크기 모델 중 압도적 성능으로 오픈소스 판도 변화' },
+  { date:'2024년 4월', title:'Llama 3 공개', desc:'Meta가 8B/70B 모델을 상업적 이용 허가로 공개. 오픈소스 표준으로 자리잡음' },
+  { date:'2024년 5월', title:'Gemini 1.5 Pro', desc:'1M 토큰 컨텍스트 창 공개. 책 전체·긴 영상을 한 번에 처리 가능' },
+  { date:'2024년 7월', title:'Llama 3.1 405B', desc:'GPT-4 수준 오픈소스 모델 등장. 상업적 이용 가능한 최초의 초대형 공개 모델' },
+  { date:'2025년 1월', title:'DeepSeek-R1', desc:'중국 DeepSeek이 o1 수준 추론 오픈소스 모델 공개. AI 업계 전반에 충격' },
+  { date:'2025년 4월', title:'GPT-4.1 / o3', desc:'OpenAI의 최신 추론 특화 모델. 코딩·수학에서 새로운 최고 성능 기록' },
+];
+
+// ─── State ───────────────────────────────────────────────────────────────────
+let sortCol = 'params';
+let sortDir = 'desc';
+let activeOrgs = new Set(['all']);
+let activeOpen = 'all';
+let searchQuery = '';
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+document.getElementById('modelCount').textContent = MODELS.length;
+
+// Org filter
+const orgs = ['전체', ...new Set(MODELS.map(m => m.org))];
+const orgFilter = document.getElementById('orgFilter');
+orgs.forEach(org => {
+  const chip = document.createElement('span');
+  chip.className = 'chip' + (org === '전체' ? ' active' : '');
+  chip.dataset.org = org === '전체' ? 'all' : org;
+  chip.textContent = org;
+  chip.addEventListener('click', () => {
+    activeOrgs = new Set([chip.dataset.org]);
+    document.querySelectorAll('#orgFilter .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    renderTable();
+  });
+  orgFilter.appendChild(chip);
+});
+
+// Open filter
+document.querySelectorAll('#openFilter .chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    activeOpen = chip.dataset.open;
+    document.querySelectorAll('#openFilter .chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    renderTable();
+  });
+});
+
+// Search
+document.getElementById('searchInput').addEventListener('input', e => {
+  searchQuery = e.target.value.toLowerCase();
+  renderTable();
+});
+
+// ─── Table ───────────────────────────────────────────────────────────────────
+const MAX_PARAMS = Math.max(...MODELS.filter(m => m.paramsB).map(m => m.paramsB));
+const MAX_CTX = Math.max(...MODELS.filter(m => m.context).map(m => m.context));
+
+function formatParams(m) {
+  return m.paramsLabel;
+}
+
+function renderTable() {
+  const tbody = document.getElementById('modelBody');
+  const filtered = MODELS.filter(m => {
+    const orgOk = activeOrgs.has('all') || activeOrgs.has(m.org);
+    const openOk = activeOpen === 'all' || m.open === activeOpen;
+    const searchOk = !searchQuery || m.name.toLowerCase().includes(searchQuery) || m.org.toLowerCase().includes(searchQuery);
+    return orgOk && openOk && searchOk;
+  });
+
+  filtered.sort((a, b) => {
+    let av = a[sortCol], bv = b[sortCol];
+    if (sortCol === 'params') { av = a.paramsB || 0; bv = b.paramsB || 0; }
+    if (av == null) av = -Infinity;
+    if (bv == null) bv = -Infinity;
+    if (typeof av === 'string') av = av.toLowerCase();
+    if (typeof bv === 'string') bv = bv.toLowerCase();
+    if (av < bv) return sortDir === 'asc' ? -1 : 1;
+    if (av > bv) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
+  tbody.innerHTML = '';
+  filtered.forEach(m => {
+    const paramPct = m.paramsB ? Math.max(2, (m.paramsB / MAX_PARAMS) * 200) : 2;
+    const ctxPct = m.context ? Math.max(2, (m.context / MAX_CTX) * 120) : 2;
+    const badgeClass = m.open === 'open' ? 'badge-open' : m.open === 'closed' ? 'badge-closed' : 'badge-partial';
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="name">${m.name}</td>
+      <td class="org">${m.org}</td>
+      <td>
+        <div class="param-bar-wrap">
+          <div class="param-bar" style="width:${paramPct}px"></div>
+          <span class="param-val">${m.paramsLabel}</span>
+        </div>
+      </td>
+      <td>
+        <div style="display:flex;align-items:center;gap:.5rem;">
+          ${m.context ? `<div class="ctx-bar" style="width:${ctxPct}px"></div>` : ''}
+          <span style="font-size:.82rem;color:var(--text)">${m.contextLabel}</span>
+        </div>
+      </td>
+      <td style="color:var(--text-muted);font-size:.85rem;">${m.year}</td>
+      <td><span class="badge ${badgeClass}">${m.openLabel}</span></td>
+      <td>${m.uses.slice(0,3).map(u => `<span class="use-tag">${u}</span>`).join('')}${m.uses.length > 3 ? `<span class="use-tag">+${m.uses.length-3}</span>` : ''}</td>
+    `;
+    tr.addEventListener('click', () => openModal(m));
+    tbody.appendChild(tr);
+  });
+}
+
+// Column sort
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    if (sortCol === col) {
+      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      sortCol = col;
+      sortDir = col === 'params' || col === 'context' || col === 'year' ? 'desc' : 'asc';
+    }
+    document.querySelectorAll('thead th').forEach(h => {
+      h.classList.remove('sort-asc', 'sort-desc');
+    });
+    th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
+    renderTable();
+  });
+});
+
+// Initial render with default sort column highlighted
+document.querySelector('thead th[data-col="params"]').classList.add('sort-desc');
+renderTable();
+
+// ─── Modal ───────────────────────────────────────────────────────────────────
+function openModal(m) {
+  document.getElementById('mTitle').textContent = m.name;
+  document.getElementById('mOrg').textContent = m.org + ' · ' + m.year + '년';
+  document.getElementById('mGrid').innerHTML = `
+    <div class="modal-stat"><div class="ms-val">${m.paramsLabel}</div><div class="ms-label">파라미터</div></div>
+    <div class="modal-stat"><div class="ms-val">${m.contextLabel}</div><div class="ms-label">컨텍스트 길이</div></div>
+    <div class="modal-stat"><div class="ms-val">${m.openLabel}</div><div class="ms-label">오픈소스 여부</div></div>
+    <div class="modal-stat"><div class="ms-val">${m.uses.length}가지</div><div class="ms-label">주요 용도</div></div>
+  `;
+  document.getElementById('mUses').innerHTML = `
+    <h4>주요 용도</h4>
+    <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem;">
+      ${m.uses.map(u => `<span class="use-tag" style="font-size:.82rem;padding:.25rem .6rem;">${u}</span>`).join('')}
+    </div>
+  `;
+  document.getElementById('mDesc').innerHTML = `<h4>모델 설명</h4><p style="margin-top:.4rem;">${m.desc}</p>`;
+  document.getElementById('mStrength').innerHTML = `<h4>강점</h4><p style="margin-top:.4rem;">${m.strength}</p>`;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+document.getElementById('modalClose').addEventListener('click', () => {
+  document.getElementById('modalOverlay').classList.remove('open');
+});
+document.getElementById('modalOverlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modalOverlay'))
+    document.getElementById('modalOverlay').classList.remove('open');
+});
+
+// ─── Charts ──────────────────────────────────────────────────────────────────
+const chartDefaults = {
+  color: '#8892b0',
+  borderColor: '#2e3250',
+};
+Chart.defaults.color = '#8892b0';
+Chart.defaults.borderColor = '#2e3250';
+Chart.defaults.font.family = "'Apple SD Gothic Neo', -apple-system, sans-serif";
+
+// Bar chart — representative models per org
+const barModels = [
+  { name:'GPT-4', params:1800, color:'#7c6af7' },
+  { name:'DeepSeek-R1', params:671, color:'#56cfb2' },
+  { name:'Falcon 180B', params:180, color:'#f7a35c' },
+  { name:'GPT-3', params:175, color:'#e95f5f' },
+  { name:'Llama 3.1 405B', params:405, color:'#7c6af7' },
+  { name:'Claude 3 Opus', params:300, color:'#a07cf7' },
+  { name:'PaLM 2', params:340, color:'#56cfb2' },
+  { name:'Qwen 2.5 72B', params:72, color:'#f7d35c' },
+];
+barModels.sort((a,b)=>b.params-a.params);
+
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: barModels.map(m => m.name),
+    datasets: [{
+      label: '파라미터 (B)',
+      data: barModels.map(m => m.params),
+      backgroundColor: barModels.map(m => m.color + 'cc'),
+      borderColor: barModels.map(m => m.color),
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: { legend: { display: false }, tooltip: {
+      callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString()} B` }
+    }},
+    scales: {
+      x: { ticks: { maxRotation: 30, font: { size: 10 } }, grid: { display: false } },
+      y: { ticks: { callback: v => v >= 1000 ? (v/1000)+'T' : v+'B' }, grid: { color: '#2e3250' } }
+    }
+  }
+});
+
+// Pie chart — open/closed/partial
+const openCounts = { open: 0, closed: 0, partial: 0 };
+MODELS.forEach(m => openCounts[m.open]++);
+new Chart(document.getElementById('pieChart'), {
+  type: 'doughnut',
+  data: {
+    labels: ['오픈소스', '비공개', '부분공개'],
+    datasets: [{
+      data: [openCounts.open, openCounts.closed, openCounts.partial],
+      backgroundColor: ['#56cfb2cc', '#7c6af7cc', '#f7a35ccc'],
+      borderColor: ['#56cfb2', '#7c6af7', '#f7a35c'],
+      borderWidth: 2,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}개` } }
+    },
+    cutout: '60%',
+  }
+});
+
+// Line chart — max params over time
+const paramTimeline = [
+  { year: 2018, model: 'BERT', params: 0.34 },
+  { year: 2019, model: 'GPT-2', params: 1.5 },
+  { year: 2020, model: 'GPT-3', params: 175 },
+  { year: 2021, model: 'Switch-C', params: 1571 },
+  { year: 2022, model: 'PaLM', params: 540 },
+  { year: 2023, model: 'GPT-4(추정)', params: 1800 },
+  { year: 2024, model: 'Llama3.1 405B', params: 405 },
+  { year: 2025, model: 'DeepSeek-R1', params: 671 },
+];
+new Chart(document.getElementById('lineChart'), {
+  type: 'line',
+  data: {
+    labels: paramTimeline.map(d => d.year + ''),
+    datasets: [{
+      label: '대표 모델 파라미터 (B)',
+      data: paramTimeline.map(d => d.params),
+      borderColor: '#7c6af7',
+      backgroundColor: '#7c6af720',
+      fill: true,
+      tension: 0.3,
+      pointBackgroundColor: '#7c6af7',
+      pointRadius: 5,
+      pointHoverRadius: 8,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: {
+        title: ctx => paramTimeline[ctx[0].dataIndex].model + ' (' + ctx[0].label + ')',
+        label: ctx => ` ${ctx.parsed.y.toLocaleString()} B`
+      }}
+    },
+    scales: {
+      y: {
+        type: 'logarithmic',
+        ticks: { callback: v => v >= 1000 ? (v/1000)+'T' : v+'B' },
+        grid: { color: '#2e3250' }
+      },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Bubble chart — params vs context
+const bubbleData = MODELS.filter(m => m.paramsB && m.context).map(m => ({
+  x: Math.log10(m.paramsB + 0.01),
+  y: Math.log10(m.context),
+  r: Math.max(4, Math.min(20, Math.sqrt(m.paramsB) * 0.8)),
+  label: m.name,
+  color: m.open === 'open' ? '#56cfb2' : m.open === 'closed' ? '#7c6af7' : '#f7a35c'
+}));
+
+new Chart(document.getElementById('bubbleChart'), {
+  type: 'bubble',
+  data: {
+    datasets: [{
+      label: '모델',
+      data: bubbleData,
+      backgroundColor: bubbleData.map(d => d.color + '99'),
+      borderColor: bubbleData.map(d => d.color),
+      borderWidth: 1.5,
+    }]
+  },
+  options: {
+    responsive: true, maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: {
+        label: ctx => {
+          const d = bubbleData[ctx.dataIndex];
+          const params = Math.pow(10, ctx.parsed.x).toFixed(0);
+          const ctx2 = Math.pow(10, ctx.parsed.y).toFixed(0);
+          return ` ${d.label} — ${Number(params).toLocaleString()}B, ctx:${Number(ctx2).toLocaleString()}`;
+        }
+      }}
+    },
+    scales: {
+      x: {
+        title: { display: true, text: '파라미터 규모 (log10 B)', color: '#8892b0' },
+        ticks: { callback: v => Math.pow(10,v) >= 1000 ? (Math.pow(10,v)/1000).toFixed(1)+'T B' : Math.round(Math.pow(10,v))+'B' },
+        grid: { color: '#2e3250' }
+      },
+      y: {
+        title: { display: true, text: '컨텍스트 길이 (log10 tokens)', color: '#8892b0' },
+        ticks: { callback: v => Math.pow(10,v) >= 1000 ? (Math.pow(10,v)/1000).toFixed(0)+'K' : Math.round(Math.pow(10,v)) },
+        grid: { color: '#2e3250' }
+      }
+    }
+  }
+});
+
+// ─── Use-case cards ───────────────────────────────────────────────────────────
+const ucGrid = document.getElementById('usecaseGrid');
+USECASES.forEach(uc => {
+  const card = document.createElement('div');
+  card.className = 'usecase-card';
+  card.innerHTML = `
+    <div class="uc-icon">${uc.icon}</div>
+    <div class="uc-title">${uc.title}</div>
+    <div class="uc-range">${uc.range}</div>
+    <div class="uc-desc">${uc.desc}</div>
+    <div class="uc-models">${uc.models.map(m => `<span class="uc-model-pill">${m}</span>`).join('')}</div>
+  `;
+  ucGrid.appendChild(card);
+});
+
+// ─── Timeline ─────────────────────────────────────────────────────────────────
+const tlEl = document.getElementById('timeline');
+TIMELINE.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'tl-item';
+  div.innerHTML = `
+    <div class="tl-dot"></div>
+    <div class="tl-date">${item.date}</div>
+    <div class="tl-content">
+      <div class="tl-title">${item.title}</div>
+      <div class="tl-desc">${item.desc}</div>
+    </div>
+  `;
+  tlEl.appendChild(div);
+  setTimeout(() => div.classList.add('visible'), 100 + i * 80);
+});
+</script>
+</body>
+</html>
