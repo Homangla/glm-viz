@@ -3,21 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>LLM 모델 파라미터 & 용도 시각화</title>
+<title>gLM (Genomic Language Model) 파라미터 & 용도 시각화</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
   :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface2: #22263a;
-    --border: #2e3250;
-    --accent: #7c6af7;
-    --accent2: #56cfb2;
-    --accent3: #f7a35c;
-    --accent4: #e95f5f;
-    --text: #e8eaf6;
-    --text-muted: #8892b0;
-    --text-dim: #4a5580;
+    --bg: #0a0f0d;
+    --surface: #111a15;
+    --surface2: #182420;
+    --border: #1f3329;
+    --accent: #3ecf8e;
+    --accent2: #64b5f6;
+    --accent3: #ffa44f;
+    --accent4: #e06c75;
+    --accent5: #c792ea;
+    --text: #e8f5ee;
+    --text-muted: #7a9e8a;
+    --text-dim: #3a5a48;
   }
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -32,27 +33,36 @@
 
   /* ── Header ── */
   header {
-    background: linear-gradient(135deg, #1a1d27 0%, #0f1117 100%);
+    background: linear-gradient(135deg, #0d1f17 0%, #0a0f0d 100%);
     border-bottom: 1px solid var(--border);
-    padding: 2rem 2rem 1.5rem;
+    padding: 2.2rem 2rem 1.6rem;
     text-align: center;
   }
+  .header-badge {
+    display: inline-block;
+    background: #1a3a28;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    padding: .25rem .9rem;
+    border-radius: 20px;
+    margin-bottom: .9rem;
+  }
   header h1 {
-    font-size: 2.2rem;
+    font-size: 2.3rem;
     font-weight: 800;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
+    line-height: 1.2;
   }
-  header p {
-    color: var(--text-muted);
-    margin-top: .5rem;
-    font-size: .95rem;
-  }
+  header .sub { color: var(--text-muted); margin-top: .6rem; font-size: .93rem; }
   .updated {
     display: inline-block;
-    margin-top: .75rem;
+    margin-top: .8rem;
     background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 20px;
@@ -62,369 +72,189 @@
   }
 
   /* ── Layout ── */
-  main {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem 4rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2.5rem;
-  }
+  main { max-width: 1420px; margin: 0 auto; padding: 2rem 1.5rem 5rem; display: flex; flex-direction: column; gap: 2.5rem; }
 
-  /* ── Section titles ── */
+  /* ── Section ── */
   .section-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--text);
-    display: flex;
-    align-items: center;
-    gap: .6rem;
-    margin-bottom: 1.2rem;
+    font-size: 1.05rem; font-weight: 700; color: var(--text);
+    display: flex; align-items: center; gap: .6rem; margin-bottom: 1.2rem;
   }
-  .section-title .dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--accent);
-    flex-shrink: 0;
-  }
+  .section-title .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
 
-  /* ── Cards / Panels ── */
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
 
-  /* ── Stat summary row ── */
-  .stat-row {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-  }
+  /* ── Stat row ── */
+  .stat-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; }
   .stat-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.1rem 1.3rem;
-    text-align: center;
-    transition: border-color .2s;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.1rem 1.2rem; text-align: center; transition: border-color .2s;
   }
   .stat-card:hover { border-color: var(--accent); }
   .stat-card .val {
-    font-size: 1.9rem;
-    font-weight: 800;
+    font-size: 1.8rem; font-weight: 800;
     background: linear-gradient(90deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   }
-  .stat-card .label {
-    font-size: .78rem;
-    color: var(--text-muted);
-    margin-top: .2rem;
-  }
+  .stat-card .label { font-size: .76rem; color: var(--text-muted); margin-top: .25rem; }
+
+  /* ── Modality legend ── */
+  .legend-row { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1rem; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: .4rem; font-size: .8rem; color: var(--text-muted); }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 
   /* ── Filters ── */
-  .filter-bar {
-    display: flex;
-    flex-wrap: wrap;
-    gap: .6rem;
-    align-items: center;
-  }
-  .filter-bar label { color: var(--text-muted); font-size: .85rem; }
-  .chip-group { display: flex; flex-wrap: wrap; gap: .5rem; }
+  .filter-bar { display: flex; flex-wrap: wrap; gap: .7rem; align-items: center; margin-bottom: 1rem; }
+  .filter-bar label { color: var(--text-muted); font-size: .83rem; }
+  .chip-group { display: flex; flex-wrap: wrap; gap: .4rem; }
   .chip {
-    padding: .35rem .85rem;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    background: var(--surface2);
-    color: var(--text-muted);
-    font-size: .8rem;
-    cursor: pointer;
-    transition: all .2s;
-    user-select: none;
+    padding: .3rem .8rem; border-radius: 20px; border: 1px solid var(--border);
+    background: var(--surface2); color: var(--text-muted); font-size: .78rem;
+    cursor: pointer; transition: all .2s; user-select: none;
   }
-  .chip.active {
-    background: var(--accent);
-    border-color: var(--accent);
-    color: #fff;
-  }
+  .chip.active { background: var(--accent); border-color: var(--accent); color: #000; font-weight: 700; }
   .chip:hover:not(.active) { border-color: var(--accent); color: var(--text); }
 
-  /* ── Table ── */
-  .table-wrap { overflow-x: auto; }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: .88rem;
-  }
-  thead th {
-    background: var(--surface2);
-    color: var(--text-muted);
-    font-weight: 600;
-    padding: .75rem 1rem;
-    text-align: left;
-    border-bottom: 1px solid var(--border);
-    white-space: nowrap;
-    cursor: pointer;
-    user-select: none;
-  }
-  thead th:hover { color: var(--text); }
-  thead th .sort-icon { opacity: .4; margin-left: .3rem; font-size: .75rem; }
-  thead th.sort-asc .sort-icon::after { content: '▲'; opacity: 1; }
-  thead th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
-  thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background .15s;
-    cursor: pointer;
-  }
-  tbody tr:hover { background: var(--surface2); }
-  tbody tr.hidden { display: none; }
-  td { padding: .7rem 1rem; vertical-align: middle; }
-  td.name { font-weight: 600; color: var(--text); }
-  td.org { color: var(--text-muted); font-size: .82rem; }
-
-  .badge {
-    display: inline-block;
-    padding: .2rem .55rem;
-    border-radius: 6px;
-    font-size: .75rem;
-    font-weight: 600;
-    white-space: nowrap;
-  }
-  .badge-open { background: #1a3a2a; color: #56cfb2; border: 1px solid #2a5a4a; }
-  .badge-closed { background: #2a1a3a; color: #a07cf7; border: 1px solid #4a2a6a; }
-  .badge-partial { background: #3a2a1a; color: #f7a35c; border: 1px solid #6a4a2a; }
-
-  /* param bar */
-  .param-bar-wrap { display: flex; align-items: center; gap: .6rem; min-width: 160px; }
-  .param-bar {
-    height: 8px;
-    border-radius: 4px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    transition: width .4s ease;
-    min-width: 2px;
-  }
-  .param-val { font-size: .82rem; color: var(--text); white-space: nowrap; }
-
-  /* context bar */
-  .ctx-bar {
-    height: 6px;
-    border-radius: 3px;
-    background: linear-gradient(90deg, var(--accent3), var(--accent4));
-    min-width: 2px;
-    display: inline-block;
-    vertical-align: middle;
-  }
-
-  /* use-case tags */
-  .use-tag {
-    display: inline-block;
-    padding: .15rem .5rem;
-    border-radius: 5px;
-    font-size: .73rem;
-    margin: .1rem .1rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    white-space: nowrap;
-  }
-
-  /* ── Chart grid ── */
-  .chart-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-    gap: 1.5rem;
-  }
-  .chart-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 1.5rem;
-  }
-  .chart-box h3 {
-    font-size: .9rem;
-    color: var(--text-muted);
-    margin-bottom: 1rem;
-    font-weight: 600;
-  }
-  .chart-wrap { position: relative; height: 280px; }
-
-  /* ── Timeline ── */
-  .timeline {
-    position: relative;
-    padding-left: 2rem;
-  }
-  .timeline::before {
-    content: '';
-    position: absolute;
-    left: .45rem;
-    top: 0; bottom: 0;
-    width: 2px;
-    background: var(--border);
-  }
-  .tl-item {
-    position: relative;
-    margin-bottom: 1.2rem;
-    opacity: 0;
-    transform: translateX(-10px);
-    transition: all .4s ease;
-  }
-  .tl-item.visible { opacity: 1; transform: none; }
-  .tl-dot {
-    position: absolute;
-    left: -1.7rem;
-    top: .3rem;
-    width: 12px; height: 12px;
-    border-radius: 50%;
-    background: var(--accent);
-    border: 2px solid var(--bg);
-  }
-  .tl-date {
-    font-size: .75rem;
-    color: var(--text-dim);
-    margin-bottom: .2rem;
-  }
-  .tl-content {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: .7rem 1rem;
-    font-size: .85rem;
-  }
-  .tl-title { font-weight: 700; color: var(--text); }
-  .tl-desc { color: var(--text-muted); font-size: .8rem; margin-top: .2rem; }
-
-  /* ── Use-case cards ── */
-  .usecase-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1rem;
-  }
-  .usecase-card {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.2rem;
-    transition: all .2s;
-    cursor: default;
-  }
-  .usecase-card:hover {
-    border-color: var(--accent);
-    transform: translateY(-2px);
-  }
-  .usecase-card .uc-icon { font-size: 1.6rem; margin-bottom: .5rem; }
-  .usecase-card .uc-title { font-weight: 700; font-size: .95rem; color: var(--text); }
-  .usecase-card .uc-range {
-    font-size: .78rem;
-    color: var(--accent2);
-    margin: .3rem 0 .5rem;
-    font-weight: 600;
-  }
-  .usecase-card .uc-desc { font-size: .8rem; color: var(--text-muted); line-height: 1.5; }
-  .uc-models { display: flex; flex-wrap: wrap; gap: .3rem; margin-top: .7rem; }
-  .uc-model-pill {
-    font-size: .72rem;
-    padding: .15rem .5rem;
-    border-radius: 20px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-  }
-
-  /* ── Detail modal ── */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,.7);
-    z-index: 100;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-  }
-  .modal-overlay.open { display: flex; }
-  .modal {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 2rem;
-    max-width: 560px;
-    width: 100%;
-    position: relative;
-    max-height: 90vh;
-    overflow-y: auto;
-  }
-  .modal h2 { font-size: 1.4rem; margin-bottom: .3rem; }
-  .modal-org { color: var(--text-muted); font-size: .9rem; margin-bottom: 1rem; }
-  .modal-close {
-    position: absolute;
-    top: 1rem; right: 1.2rem;
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    cursor: pointer;
-    line-height: 1;
-  }
-  .modal-close:hover { color: var(--text); }
-  .modal-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: .7rem;
-    margin-bottom: 1rem;
-  }
-  .modal-stat {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: .8rem;
-    text-align: center;
-  }
-  .modal-stat .ms-val { font-size: 1.2rem; font-weight: 800; color: var(--accent); }
-  .modal-stat .ms-label { font-size: .72rem; color: var(--text-muted); margin-top: .2rem; }
-  .modal-section { margin-top: 1rem; }
-  .modal-section h4 { font-size: .85rem; color: var(--text-muted); margin-bottom: .4rem; font-weight: 600; }
-  .modal-section p { font-size: .88rem; color: var(--text); line-height: 1.6; }
-
-  /* ── Footer ── */
-  footer {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-dim);
-    font-size: .8rem;
-    border-top: 1px solid var(--border);
-  }
-
-  /* ── Search ── */
   .search-input {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: .45rem .9rem;
-    color: var(--text);
-    font-size: .88rem;
-    outline: none;
-    width: 200px;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 8px;
+    padding: .4rem .85rem; color: var(--text); font-size: .85rem; outline: none; width: 190px;
   }
   .search-input:focus { border-color: var(--accent); }
   .search-input::placeholder { color: var(--text-dim); }
 
+  /* ── Table ── */
+  .table-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .86rem; }
+  thead th {
+    background: var(--surface2); color: var(--text-muted); font-weight: 600;
+    padding: .7rem 1rem; text-align: left; border-bottom: 1px solid var(--border);
+    white-space: nowrap; cursor: pointer; user-select: none;
+  }
+  thead th:hover { color: var(--text); }
+  thead th .sort-icon { opacity: .4; margin-left: .3rem; font-size: .72rem; }
+  thead th.sort-asc .sort-icon::after { content: '▲'; opacity: 1; }
+  thead th.sort-desc .sort-icon::after { content: '▼'; opacity: 1; }
+  thead th:not(.sort-asc):not(.sort-desc) .sort-icon::after { content: '⇅'; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; cursor: pointer; }
+  tbody tr:hover { background: var(--surface2); }
+  td { padding: .65rem 1rem; vertical-align: middle; }
+  td.name { font-weight: 700; color: var(--text); }
+
+  /* modality dot in table */
+  .mod-dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: .4rem; vertical-align: middle; }
+
+  /* param bar */
+  .param-bar-wrap { display: flex; align-items: center; gap: .55rem; min-width: 150px; }
+  .param-bar { height: 7px; border-radius: 4px; transition: width .4s; min-width: 2px; }
+  .param-val { font-size: .8rem; color: var(--text); white-space: nowrap; }
+
+  /* context bar */
+  .ctx-bar { height: 6px; border-radius: 3px; display: inline-block; vertical-align: middle; min-width: 2px; }
+
+  /* badge */
+  .badge { display: inline-block; padding: .18rem .5rem; border-radius: 5px; font-size: .73rem; font-weight: 700; white-space: nowrap; }
+  .badge-dna   { background: #1a3a1a; color: #3ecf8e; border: 1px solid #2a5a2a; }
+  .badge-rna   { background: #1a2a3a; color: #64b5f6; border: 1px solid #2a4a6a; }
+  .badge-prot  { background: #3a1a3a; color: #c792ea; border: 1px solid #5a2a5a; }
+  .badge-multi { background: #3a2a1a; color: #ffa44f; border: 1px solid #6a4a2a; }
+  .badge-splc  { background: #3a1a1a; color: #e06c75; border: 1px solid #6a2a2a; }
+
+  .use-tag {
+    display: inline-block; padding: .13rem .48rem; border-radius: 5px; font-size: .72rem;
+    margin: .1rem; background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); white-space: nowrap;
+  }
+
+  /* ── Charts ── */
+  .chart-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 1.5rem; }
+  .chart-box { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; padding: 1.5rem; }
+  .chart-box h3 { font-size: .88rem; color: var(--text-muted); margin-bottom: 1rem; font-weight: 600; }
+  .chart-wrap { position: relative; height: 280px; }
+
+  /* ── Architecture explainer ── */
+  .arch-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; }
+  .arch-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.1rem; transition: all .2s; cursor: default;
+  }
+  .arch-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .arch-card .arch-icon { font-size: 1.6rem; margin-bottom: .5rem; }
+  .arch-card .arch-name { font-weight: 700; font-size: .93rem; color: var(--text); }
+  .arch-card .arch-models { font-size: .75rem; color: var(--accent); margin: .2rem 0 .4rem; font-weight: 600; }
+  .arch-card .arch-desc { font-size: .78rem; color: var(--text-muted); line-height: 1.5; }
+  .arch-card .arch-pro { font-size: .75rem; color: #3ecf8e; margin-top: .5rem; }
+  .arch-card .arch-con { font-size: .75rem; color: #e06c75; }
+
+  /* ── Task cards ── */
+  .task-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .task-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1.15rem; transition: all .2s;
+  }
+  .task-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+  .task-card .tc-icon { font-size: 1.5rem; margin-bottom: .5rem; }
+  .task-card .tc-title { font-weight: 700; font-size: .92rem; color: var(--text); }
+  .task-card .tc-models { display: flex; flex-wrap: wrap; gap: .3rem; margin: .5rem 0 .4rem; }
+  .model-pill {
+    font-size: .7rem; padding: .13rem .48rem; border-radius: 20px;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
+  }
+  .task-card .tc-desc { font-size: .78rem; color: var(--text-muted); line-height: 1.5; }
+
+  /* ── Timeline ── */
+  .timeline { position: relative; padding-left: 2rem; }
+  .timeline::before { content: ''; position: absolute; left: .45rem; top: 0; bottom: 0; width: 2px; background: var(--border); }
+  .tl-item { position: relative; margin-bottom: 1.1rem; opacity: 0; transform: translateX(-8px); transition: all .35s ease; }
+  .tl-item.visible { opacity: 1; transform: none; }
+  .tl-dot { position: absolute; left: -1.7rem; top: .35rem; width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--bg); }
+  .tl-date { font-size: .73rem; color: var(--text-dim); margin-bottom: .18rem; }
+  .tl-content { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: .65rem .95rem; }
+  .tl-title { font-weight: 700; color: var(--text); font-size: .88rem; }
+  .tl-desc { color: var(--text-muted); font-size: .78rem; margin-top: .18rem; line-height: 1.5; }
+
+  /* ── Modal ── */
+  .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,.75); z-index: 100; align-items: center; justify-content: center; padding: 1rem; }
+  .modal-overlay.open { display: flex; }
+  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 2rem; max-width: 580px; width: 100%; position: relative; max-height: 90vh; overflow-y: auto; }
+  .modal h2 { font-size: 1.35rem; margin-bottom: .2rem; }
+  .modal-meta { color: var(--text-muted); font-size: .85rem; margin-bottom: 1rem; }
+  .modal-close { position: absolute; top: 1rem; right: 1.2rem; background: none; border: none; color: var(--text-muted); font-size: 1.5rem; cursor: pointer; line-height: 1; }
+  .modal-close:hover { color: var(--text); }
+  .modal-stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .6rem; margin-bottom: 1rem; }
+  .modal-stat { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: .75rem; text-align: center; }
+  .modal-stat .ms-val { font-size: 1.1rem; font-weight: 800; color: var(--accent); }
+  .modal-stat .ms-label { font-size: .7rem; color: var(--text-muted); margin-top: .2rem; }
+  .modal-section { margin-top: .9rem; }
+  .modal-section h4 { font-size: .82rem; color: var(--text-muted); margin-bottom: .35rem; font-weight: 600; }
+  .modal-section p { font-size: .86rem; color: var(--text); line-height: 1.6; }
+  .ref-link { color: var(--accent2); font-size: .78rem; text-decoration: none; }
+  .ref-link:hover { text-decoration: underline; }
+
+  /* ── Compare ── */
+  .compare-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .compare-panel { background: var(--surface2); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; }
+  .compare-panel h4 { font-size: .82rem; color: var(--text-muted); margin-bottom: .7rem; font-weight: 600; }
+  .compare-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: .4rem; font-size: .82rem; }
+  .compare-item .ci-name { color: var(--text); }
+  .compare-item .ci-bar-wrap { display: flex; align-items: center; gap: .5rem; }
+  .compare-item .ci-bar { height: 6px; border-radius: 3px; background: var(--accent); min-width: 2px; }
+  .compare-item .ci-val { color: var(--text-muted); font-size: .75rem; width: 60px; text-align: right; }
+
+  footer { text-align: center; padding: 2rem; color: var(--text-dim); font-size: .78rem; border-top: 1px solid var(--border); }
+
   @media (max-width: 600px) {
     header h1 { font-size: 1.5rem; }
     .chart-grid { grid-template-columns: 1fr; }
-    .modal-grid { grid-template-columns: 1fr; }
+    .modal-stat-grid { grid-template-columns: 1fr 1fr; }
+    .compare-row { grid-template-columns: 1fr; }
   }
 </style>
 </head>
 <body>
 
 <header>
-  <h1>LLM 모델 파라미터 & 용도 시각화</h1>
-  <p>주요 대형 언어 모델의 규모, 구조, 적용 분야를 한눈에 비교하세요</p>
-  <span class="updated">기준일: 2025년 5월 &nbsp;|&nbsp; 모델 수: <span id="modelCount">0</span>개</span>
+  <div class="header-badge">GENOMIC LANGUAGE MODELS</div>
+  <h1>gLM 파라미터 & 용도 시각화</h1>
+  <p class="sub">DNA · RNA · 단백질 서열을 학습한 유전체 언어 모델의 구조, 규모, 적용 분야</p>
+  <span class="updated">기준일: 2025년 5월 &nbsp;·&nbsp; 수록 모델: <span id="modelCount">0</span>개</span>
 </header>
 
 <main>
@@ -433,27 +263,39 @@
   <div class="panel">
     <div class="section-title"><span class="dot"></span>핵심 지표 요약</div>
     <div class="stat-row">
-      <div class="stat-card"><div class="val">24</div><div class="label">수록 모델 수</div></div>
-      <div class="stat-card"><div class="val">1.8T</div><div class="label">최대 파라미터 (GPT-4 추정)</div></div>
-      <div class="stat-card"><div class="val">1M</div><div class="label">최대 컨텍스트 (Gemini 1.5 Pro)</div></div>
-      <div class="stat-card"><div class="val">8개</div><div class="label">수록 기관/기업</div></div>
-      <div class="stat-card"><div class="val">2017→</div><div class="label">Transformer 등장 이후</div></div>
+      <div class="stat-card"><div class="val">20+</div><div class="label">수록 gLM 모델 수</div></div>
+      <div class="stat-card"><div class="val">40B</div><div class="label">최대 파라미터 (Evo 2)</div></div>
+      <div class="stat-card"><div class="val">1M bp</div><div class="label">최대 컨텍스트 (HyenaDNA)</div></div>
+      <div class="stat-card"><div class="val">DNA/RNA/단백질</div><div class="label">학습 서열 유형</div></div>
+      <div class="stat-card"><div class="val">2020→</div><div class="label">DNA BERT 이후 급성장</div></div>
+    </div>
+  </div>
+
+  <!-- 모달리티 범례 -->
+  <div class="panel" style="padding:1rem 1.5rem;">
+    <div class="legend-row">
+      <strong style="font-size:.83rem;color:var(--text-muted);margin-right:.3rem;">서열 유형:</strong>
+      <div class="legend-item"><div class="legend-dot" style="background:#3ecf8e"></div>DNA 서열</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#64b5f6"></div>RNA 서열</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#c792ea"></div>단백질 서열</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ffa44f"></div>다중 모달 (DNA+단백질 등)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e06c75"></div>스플라이싱 특화</div>
     </div>
   </div>
 
   <!-- 모델 테이블 -->
   <div class="panel">
-    <div class="section-title"><span class="dot"></span>전체 모델 목록</div>
-    <div class="filter-bar" style="margin-bottom:1rem; gap:.8rem;">
+    <div class="section-title"><span class="dot"></span>전체 gLM 목록</div>
+    <div class="filter-bar">
       <input class="search-input" id="searchInput" type="text" placeholder="모델명 검색…">
-      <label>기관:</label>
-      <div class="chip-group" id="orgFilter"></div>
-      <label>오픈소스:</label>
-      <div class="chip-group" id="openFilter">
-        <span class="chip active" data-open="all">전체</span>
-        <span class="chip" data-open="open">공개</span>
-        <span class="chip" data-open="closed">비공개</span>
-        <span class="chip" data-open="partial">부분공개</span>
+      <label>서열 유형:</label>
+      <div class="chip-group" id="modFilter">
+        <span class="chip active" data-mod="all">전체</span>
+        <span class="chip" data-mod="DNA">DNA</span>
+        <span class="chip" data-mod="RNA">RNA</span>
+        <span class="chip" data-mod="단백질">단백질</span>
+        <span class="chip" data-mod="다중">다중 모달</span>
+        <span class="chip" data-mod="스플라이싱">스플라이싱</span>
       </div>
     </div>
     <div class="table-wrap">
@@ -461,11 +303,12 @@
         <thead>
           <tr>
             <th data-col="name">모델명 <span class="sort-icon"></span></th>
+            <th data-col="mod">서열 유형</th>
             <th data-col="org">기관 <span class="sort-icon"></span></th>
             <th data-col="params">파라미터 <span class="sort-icon"></span></th>
-            <th data-col="context">컨텍스트 길이 <span class="sort-icon"></span></th>
+            <th data-col="context">컨텍스트 (bp) <span class="sort-icon"></span></th>
             <th data-col="year">출시연도 <span class="sort-icon"></span></th>
-            <th>오픈소스</th>
+            <th>아키텍처</th>
             <th>주요 용도</th>
           </tr>
         </thead>
@@ -477,15 +320,15 @@
   <!-- 차트 -->
   <div class="chart-grid">
     <div class="chart-box">
-      <h3>📊 기관별 파라미터 규모 비교 (대표 모델)</h3>
+      <h3>📊 모델별 파라미터 규모 비교</h3>
       <div class="chart-wrap"><canvas id="barChart"></canvas></div>
     </div>
     <div class="chart-box">
-      <h3>🥧 오픈소스 현황 분포</h3>
+      <h3>🥧 서열 유형 분포</h3>
       <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
     </div>
     <div class="chart-box">
-      <h3>📈 연도별 최대 파라미터 성장 추이</h3>
+      <h3>📈 연도별 gLM 파라미터 성장 추이</h3>
       <div class="chart-wrap"><canvas id="lineChart"></canvas></div>
     </div>
     <div class="chart-box">
@@ -494,23 +337,44 @@
     </div>
   </div>
 
-  <!-- 용도별 가이드 -->
+  <!-- 컨텍스트 길이 비교 -->
   <div class="panel">
-    <div class="section-title"><span class="dot"></span>파라미터 규모별 적합 용도</div>
-    <div class="usecase-grid" id="usecaseGrid"></div>
+    <div class="section-title"><span class="dot"></span>컨텍스트 길이 비교 (긴 서열 처리 능력)</div>
+    <div class="compare-row">
+      <div class="compare-panel">
+        <h4>컨텍스트 길이 순위 (bp)</h4>
+        <div id="ctxRank"></div>
+      </div>
+      <div class="compare-panel">
+        <h4>파라미터 규모 순위</h4>
+        <div id="paramRank"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 아키텍처별 설명 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>주요 아키텍처 특징</div>
+    <div class="arch-grid" id="archGrid"></div>
+  </div>
+
+  <!-- 태스크별 추천 모델 -->
+  <div class="panel">
+    <div class="section-title"><span class="dot"></span>유전체 태스크별 추천 gLM</div>
+    <div class="task-grid" id="taskGrid"></div>
   </div>
 
   <!-- 타임라인 -->
   <div class="panel">
-    <div class="section-title"><span class="dot"></span>LLM 발전 타임라인</div>
+    <div class="section-title"><span class="dot"></span>gLM 발전 타임라인</div>
     <div class="timeline" id="timeline"></div>
   </div>
 
 </main>
 
 <footer>
-  데이터는 공개된 논문·발표 자료를 기반으로 작성되었습니다. 일부 수치(특히 GPT-4)는 추정값입니다.<br>
-  Built with Chart.js &nbsp;·&nbsp; <a href="https://github.com/Homangla/llm-viz" style="color:var(--accent);">GitHub</a>
+  데이터는 공개 논문 및 GitHub 레포지토리 기준. 일부 수치는 추정값 포함.<br>
+  Built with Chart.js &nbsp;·&nbsp; <a href="https://github.com/Homangla/llm-viz" style="color:var(--accent)">GitHub</a>
 </footer>
 
 <!-- 모달 -->
@@ -518,336 +382,376 @@
   <div class="modal" id="modalContent">
     <button class="modal-close" id="modalClose">×</button>
     <h2 id="mTitle"></h2>
-    <div class="modal-org" id="mOrg"></div>
-    <div class="modal-grid" id="mGrid"></div>
+    <div class="modal-meta" id="mMeta"></div>
+    <div class="modal-stat-grid" id="mGrid"></div>
     <div class="modal-section" id="mUses"></div>
     <div class="modal-section" id="mDesc"></div>
     <div class="modal-section" id="mStrength"></div>
+    <div class="modal-section" id="mRef"></div>
   </div>
 </div>
 
 <script>
-// ─── Data ───────────────────────────────────────────────────────────────────
+// ─── Data ────────────────────────────────────────────────────────────────────
+const MOD_COLOR = {
+  'DNA':    '#3ecf8e',
+  'RNA':    '#64b5f6',
+  '단백질': '#c792ea',
+  '다중':   '#ffa44f',
+  '스플라이싱': '#e06c75',
+};
+const MOD_BADGE = {
+  'DNA':    'badge-dna',
+  'RNA':    'badge-rna',
+  '단백질': 'badge-prot',
+  '다중':   'badge-multi',
+  '스플라이싱': 'badge-splc',
+};
+
 const MODELS = [
+  // ── DNA ──
   {
-    id:'gpt4', name:'GPT-4', org:'OpenAI', year:2023,
-    params:1800, paramsLabel:'~1.8T (추정)', paramsB:1800,
-    context:128000, contextLabel:'128K',
-    open:'closed', openLabel:'비공개',
-    uses:['코드 생성','복잡한 추론','멀티모달','에이전트','법률/의료 문서'],
-    desc:'OpenAI의 최상위 모델. 멀티모달(텍스트+이미지) 입력을 지원하며 전문 분야 시험에서 인간 수준의 성능을 보임.',
-    strength:'복잡한 다단계 추론, 코드 작성, 창의적 작문, 전문 도메인 질의응답'
+    id:'dnabert', name:'DNABERT', mod:'DNA', org:'UIUC', year:2021,
+    paramsM:110, paramsLabel:'110M', contextBp:512, contextLabel:'512 bp',
+    arch:'BERT (Encoder)', tokenizer:'6-mer k-mer',
+    open:true,
+    uses:['프로모터 예측','스플라이스 사이트 예측','전사인자 결합','염색체 개방성 예측'],
+    desc:'DNA 서열 분석을 위해 처음으로 BERT 구조를 적용한 모델. 인간 참조 게놈(GRCh38)으로 사전학습. 6-mer 토크나이저로 DNA를 겹치는 6염기 단위로 분절.',
+    strength:'프로모터·스플라이스 사이트 예측, 전사인자 결합 부위 예측, 파인튜닝 기반',
+    ref:'Ji et al. 2021, Bioinformatics. doi:10.1093/bioinformatics/btab083'
   },
   {
-    id:'gpt35', name:'GPT-3.5 Turbo', org:'OpenAI', year:2022,
-    params:175, paramsLabel:'175B', paramsB:175,
-    context:16000, contextLabel:'16K',
-    open:'closed', openLabel:'비공개',
-    uses:['대화형 챗봇','요약','번역','코드 보조','고객 지원'],
-    desc:'ChatGPT에 사용된 대화 특화 모델. 빠른 응답속도와 합리적 비용으로 상업적 활용에 최적화.',
-    strength:'범용 대화, 요약, 번역, 간단한 코드 작성'
+    id:'dnabert2', name:'DNABERT-2', mod:'DNA', org:'UIUC / Salesforce', year:2023,
+    paramsM:117, paramsLabel:'117M', contextBp:4096, contextLabel:'4,096 bp',
+    arch:'BERT + ALiBi', tokenizer:'BPE (다중 종)',
+    open:true,
+    uses:['다종 게놈 분석','유전체 기능 예측','변이 효과 예측','스플라이싱 예측'],
+    desc:'DNABERT 후속작. k-mer 대신 Byte Pair Encoding(BPE) 채택으로 종간 서열 전이 성능 향상. 135개 다종 게놈으로 학습. ALiBi로 긴 컨텍스트 일반화.',
+    strength:'다중 종 전이 학습, DNABERT 대비 긴 서열, 효율적 토크나이징',
+    ref:'Zhou et al. 2023. arXiv:2306.15006'
   },
   {
-    id:'gpt3', name:'GPT-3', org:'OpenAI', year:2020,
-    params:175, paramsLabel:'175B', paramsB:175,
-    context:4096, contextLabel:'4K',
-    open:'closed', openLabel:'비공개',
-    uses:['텍스트 생성','퓨샷 학습','번역','질의응답'],
-    desc:'Few-shot learning의 가능성을 세상에 알린 모델. 방대한 파라미터로 프롬프트만으로 다양한 작업 수행.',
-    strength:'텍스트 생성, 퓨샷 러닝, 다양한 NLP 작업'
+    id:'nt', name:'Nucleotide Transformer', mod:'DNA', org:'InstaDeep / NVIDIA / Meta', year:2023,
+    paramsM:2500, paramsLabel:'500M–2.5B', contextBp:6144, contextLabel:'6,144 bp',
+    arch:'GPT (Decoder)', tokenizer:'6-mer k-mer',
+    open:true,
+    uses:['변이 효과 예측','유전자 발현 예측','에피제놈 예측','다종 유전체 분석'],
+    desc:'인간 게놈과 850개 다종 게놈으로 학습한 대규모 DNA 언어 모델 패밀리. 500M·2.5B 버전 제공. 18가지 유전체 태스크 벤치마크에서 광범위하게 평가됨.',
+    strength:'대규모 다종 게놈 학습, 에피제놈·유전자 발현 예측, 500M~2.5B 스케일',
+    ref:'Dalla-Torre et al. 2023. Nature Methods 21, 1164–1173'
   },
   {
-    id:'o3', name:'o3 / o4-mini', org:'OpenAI', year:2025,
-    params:null, paramsLabel:'미공개', paramsB:500,
-    context:200000, contextLabel:'200K',
-    open:'closed', openLabel:'비공개',
-    uses:['수학/과학 추론','코딩 경쟁','연구 보조','복잡한 계획'],
-    desc:'강화학습 기반 추론 특화 모델. 수학·코딩·과학 분야에서 압도적 성능. 느리지만 정확도 최우선.',
-    strength:'수학 증명, 알고리즘 설계, 다단계 과학 문제 풀이'
+    id:'hyenadna', name:'HyenaDNA', mod:'DNA', org:'Stanford / Arc Institute', year:2023,
+    paramsM:6.6, paramsLabel:'1.6M–6.6M', contextBp:1000000, contextLabel:'1,000,000 bp',
+    arch:'Hyena (SSM 기반)', tokenizer:'단일 염기 (문자 수준)',
+    open:true,
+    uses:['장거리 유전체 의존성','크로마틴 프로파일링','인핸서 예측','멀티태스크 벤치마크'],
+    desc:'Transformer 대신 Hyena operator(SSM 기반)를 사용해 1M bp 컨텍스트를 선형 복잡도로 처리. 파라미터가 작지만 긴 유전체 서열의 장거리 의존성 포착에 탁월.',
+    strength:'초장거리 유전체 컨텍스트(1M bp), 선형 메모리 복잡도, 크로마틴 구조 예측',
+    ref:'Nguyen et al. 2023. ICML 2023'
   },
   {
-    id:'claude3opus', name:'Claude 3 Opus', org:'Anthropic', year:2024,
-    params:null, paramsLabel:'미공개', paramsB:300,
-    context:200000, contextLabel:'200K',
-    open:'closed', openLabel:'비공개',
-    uses:['복잡한 분석','코드 생성','연구 지원','장문 처리','안전 AI'],
-    desc:'Anthropic의 최고 성능 모델. Constitutional AI로 안전성 강화. 200K 토큰 컨텍스트로 긴 문서 처리에 강점.',
-    strength:'긴 문서 분석, 복잡한 코딩, 연구 보조, 안전성 중요 애플리케이션'
+    id:'evo', name:'Evo', mod:'다중', org:'Arc Institute', year:2024,
+    paramsM:7000, paramsLabel:'7B', contextBp:131072, contextLabel:'131,072 bp',
+    arch:'StripedHyena (SSM+Attention)', tokenizer:'단일 염기',
+    open:true,
+    uses:['유전체→단백질 통합 예측','CRISPR 시스템 설계','비코딩 RNA 기능','유전체 생성'],
+    desc:'DNA 서열 하나로 유전체·전사체·단백질 기능을 통합 학습한 최초의 대규모 멀티모달 gLM. 2.7T 뉴클레오티드로 사전학습. CRISPR gRNA 효율 예측, 새로운 단백질 기능 발견에 활용.',
+    strength:'DNA→단백질 통합 모델링, 대규모 유전체 생성, CRISPR 설계, 단일 염기 해상도',
+    ref:'Nguyen et al. 2024. Science 386, eado9336'
   },
   {
-    id:'claude35', name:'Claude 3.5 Sonnet', org:'Anthropic', year:2024,
-    params:null, paramsLabel:'미공개', paramsB:200,
-    context:200000, contextLabel:'200K',
-    open:'closed', openLabel:'비공개',
-    uses:['코딩','데이터 분석','창의적 작문','대화','에이전트'],
-    desc:'성능과 속도의 균형을 맞춘 Anthropic의 대표 모델. 코딩 작업에서 GPT-4를 능가하는 벤치마크 기록.',
-    strength:'코드 작성 및 디버깅, 데이터 분석, 복잡한 지시 따르기'
+    id:'evo2', name:'Evo 2', mod:'다중', org:'Arc Institute', year:2024,
+    paramsM:40000, paramsLabel:'40B', contextBp:131072, contextLabel:'131,072 bp',
+    arch:'StripedHyena 2', tokenizer:'단일 염기',
+    open:true,
+    uses:['기능적 변이 예측','진화적 제약 학습','유전체 설계','희귀 변이 해석'],
+    desc:'Evo의 대규모 후속 모델. 9조 뉴클레오티드, 128,000개 종으로 사전학습. 오픈소스 최대 규모 gLM. 임상적으로 의미 있는 변이 효과 예측에서 최고 성능.',
+    strength:'오픈소스 최대 gLM(40B), 희귀 변이 임상 해석, 진화적 제약 모델링',
+    ref:'Brixi et al. 2025. bioRxiv'
   },
   {
-    id:'gemini15pro', name:'Gemini 1.5 Pro', org:'Google DeepMind', year:2024,
-    params:null, paramsLabel:'미공개', paramsB:500,
-    context:1000000, contextLabel:'1M',
-    open:'closed', openLabel:'비공개',
-    uses:['장문서 분석','멀티모달','코드 분석','비디오 이해','과학 연구'],
-    desc:'1M 토큰 컨텍스트 창으로 책 전체, 긴 영상, 대용량 코드베이스를 한 번에 처리. MoE 아키텍처 사용.',
-    strength:'초장문 문서/코드 분석, 비디오-텍스트 멀티모달, 대규모 컨텍스트 추론'
+    id:'caduceus', name:'Caduceus', mod:'DNA', org:'Princeton', year:2024,
+    paramsM:1.9, paramsLabel:'1.9M–7.1M', contextBp:131072, contextLabel:'131,072 bp',
+    arch:'BiMamba (양방향 SSM)', tokenizer:'단일 염기',
+    open:true,
+    uses:['장거리 유전체 모델링','변이 효과 예측','유전체 기능 분류'],
+    desc:'Mamba SSM을 양방향(Bidirectional)으로 확장한 DNA 언어 모델. 긴 서열을 선형 메모리로 처리하면서 양방향 컨텍스트 확보. HyenaDNA 대비 다운스트림 성능 향상.',
+    strength:'양방향 장거리 컨텍스트, SSM 효율성 유지, HyenaDNA 대비 개선된 성능',
+    ref:'Schiff et al. 2024. ICLR 2024'
   },
   {
-    id:'gemini2flash', name:'Gemini 2.0 Flash', org:'Google DeepMind', year:2025,
-    params:null, paramsLabel:'미공개', paramsB:80,
-    context:1000000, contextLabel:'1M',
-    open:'closed', openLabel:'비공개',
-    uses:['실시간 대화','빠른 코딩','멀티모달','저비용 API'],
-    desc:'속도와 비용 효율에 최적화된 경량 버전. 실시간 애플리케이션과 대량 API 호출에 적합.',
-    strength:'빠른 응답이 필요한 실시간 서비스, 고빈도 API 호출'
+    id:'grover', name:'GROVER', mod:'DNA', org:'여러 기관', year:2023,
+    paramsM:100, paramsLabel:'100M', contextBp:1024, contextLabel:'1,024 bp',
+    arch:'BERT (Encoder)', tokenizer:'k-mer',
+    open:true,
+    uses:['유전체 표현 학습','멀티태스크 분류','비교 유전체학'],
+    desc:'Graph-based 표현 학습을 접목한 유전체 언어 모델. 다중 종 서열 정렬 정보를 활용해 진화적 보존 신호를 학습.',
+    strength:'진화 정보 통합, 비교 유전체 태스크',
+    ref:'GROVER: Learning Genomic Representations (2023)'
   },
   {
-    id:'llama3405', name:'Llama 3.1 405B', org:'Meta', year:2024,
-    params:405, paramsLabel:'405B', paramsB:405,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['범용 추론','코드 생성','합성 데이터 생성','연구','파인튜닝 기반'],
-    desc:'Meta가 공개한 최대 규모 오픈소스 모델. GPT-4에 맞먹는 성능을 무료로 사용 가능. 연구 및 상업적 이용 허가.',
-    strength:'오픈소스 최고 성능 추론, 파인튜닝을 위한 강력한 기반, 합성 데이터 생성'
+    id:'gena', name:'GENA-LM', mod:'DNA', org:'Skoltech', year:2023,
+    paramsM:110, paramsLabel:'110M–336M', contextBp:4096, contextLabel:'4,096 bp',
+    arch:'BERT / BigBird', tokenizer:'BPE',
+    open:true,
+    uses:['유전자 발현','프로모터','폴리아데닐화 사이트','스플라이싱'],
+    desc:'BigBird Sparse Attention으로 긴 서열을 처리. BPE 토크나이저 적용. DNABERT와 달리 BigBird 변형으로 더 긴 입력 처리 가능.',
+    strength:'다양한 유전체 분류 태스크, BigBird 기반 효율적 어텐션',
+    ref:'Fishman et al. 2023. bioRxiv'
+  },
+  // ── Splicing 특화 ──
+  {
+    id:'splicebert', name:'SpliceBERT', mod:'스플라이싱', org:'여러 기관', year:2023,
+    paramsM:19, paramsLabel:'19M', contextBp:512, contextLabel:'512 bp',
+    arch:'BERT (Encoder)', tokenizer:'단일 염기',
+    open:true,
+    uses:['스플라이스 사이트 인식','스플라이싱 신호 예측','RNA 처리 연구','변이 스플라이싱 효과'],
+    desc:'pre-mRNA 서열로 사전학습한 스플라이싱 특화 언어 모델. 200M 개 척추동물 pre-mRNA 서열로 학습. 스플라이스 사이트 인식 및 브랜치 포인트 예측에서 최고 성능.',
+    strength:'스플라이싱 신호 특화, 변이의 스플라이싱 효과 예측, 소규모·효율적',
+    ref:'Chen et al. 2023. bioRxiv 2023.01.31.526427'
   },
   {
-    id:'llama3-70', name:'Llama 3.1 70B', org:'Meta', year:2024,
-    params:70, paramsLabel:'70B', paramsB:70,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['대화형 AI','코딩','요약','번역','로컬 배포'],
-    desc:'성능과 실용성의 균형. 고사양 GPU 1~2장으로 로컬 실행 가능한 최상위 오픈소스 모델.',
-    strength:'고성능 로컬 배포, 기업 내부 AI 서비스, 범용 NLP 작업'
+    id:'pangolin', name:'Pangolin', mod:'스플라이싱', org:'여러 기관', year:2023,
+    paramsM:10, paramsLabel:'~10M', contextBp:5000, contextLabel:'5,000 bp',
+    arch:'Transformer (소형)', tokenizer:'단일 염기',
+    open:true,
+    uses:['조직 특이적 스플라이싱','이소폼 정량화','스플라이싱 QTL','변이 해석'],
+    desc:'조직 특이적 스플라이싱 사용량(PSI)을 예측하는 딥러닝 모델. 53개 조직 GTEx 데이터로 학습. 변이의 스플라이싱 효과를 조직 맥락에서 예측.',
+    strength:'조직 특이적 스플라이싱 예측, SpliceAI 대비 이소폼 맥락 풍부',
+    ref:'Zeng & Bromberg 2023. Genome Research'
   },
   {
-    id:'llama3-8', name:'Llama 3.1 8B', org:'Meta', year:2024,
-    params:8, paramsLabel:'8B', paramsB:8,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['엣지 배포','빠른 추론','파인튜닝','모바일','저비용 서비스'],
-    desc:'소비자급 GPU 또는 CPU로도 실행 가능한 경량 모델. RAG, 파인튜닝 실험의 기본 베이스라인으로 활용.',
-    strength:'자원 제약 환경, 엣지 컴퓨팅, 도메인 특화 파인튜닝'
+    id:'spliceai', name:'SpliceAI', mod:'스플라이싱', org:'Illumina', year:2019,
+    paramsM:0.4, paramsLabel:'~0.4M', contextBp:10000, contextLabel:'10,000 bp',
+    arch:'ResNet (1D CNN)', tokenizer:'원-핫 인코딩',
+    open:true,
+    uses:['심층 내재 변이 스플라이싱 효과','임상 변이 해석','신규 스플라이스 사이트 예측','WGS 변이 우선순위화'],
+    desc:'CNN 기반 스플라이스 사이트 예측 모델. 엄밀한 의미의 언어 모델은 아니지만 gLM 비교에서 핵심 기준선. 심층 내재(deep intronic) 변이로 인한 이상 스플라이싱 예측의 표준.',
+    strength:'임상 변이 해석 표준, 10Kbp 컨텍스트, 광범위한 벤치마크 검증',
+    ref:'Jaganathan et al. 2019. Cell 176(3):535–548'
+  },
+  // ── RNA ──
+  {
+    id:'rnafm', name:'RNA-FM', mod:'RNA', org:'여러 기관', year:2022,
+    paramsM:100, paramsLabel:'100M', contextBp:1024, contextLabel:'1,024 nt',
+    arch:'BERT (Encoder)', tokenizer:'단일 뉴클레오티드',
+    open:true,
+    uses:['RNA 구조 예측','ncRNA 기능 예측','RNA-단백질 상호작용','코돈 최적화'],
+    desc:'23M 개 비번역 RNA(ncRNA) 서열로 사전학습. RNA 2차 구조 예측·RNA 기능 분류에서 기존 모델 대비 우수한 성능. RNA 특화 최초의 대규모 언어 모델 중 하나.',
+    strength:'ncRNA 기능 예측, RNA 2차 구조, RNA-단백질 상호작용',
+    ref:'Chen et al. 2022. bioRxiv 2022.08.06.503062'
   },
   {
-    id:'mistral7b', name:'Mistral 7B', org:'Mistral AI', year:2023,
-    params:7, paramsLabel:'7B', paramsB:7,
-    context:32000, contextLabel:'32K',
-    open:'open', openLabel:'공개',
-    uses:['코딩','추론','임베딩','파인튜닝','로컬 실행'],
-    desc:'출시 당시 같은 크기 모델 중 최고 성능. Sliding Window Attention으로 긴 컨텍스트를 효율적으로 처리.',
-    strength:'경량 고성능 베이스 모델, 도메인 특화 파인튜닝의 강력한 출발점'
+    id:'rnabert', name:'RNAbert', mod:'RNA', org:'Osaka University', year:2022,
+    paramsM:0.48, paramsLabel:'0.48M', contextBp:440, contextLabel:'440 nt',
+    arch:'BERT (초경량)', tokenizer:'구조 인식 토크나이저',
+    open:true,
+    uses:['ncRNA 분류','RNA 클러스터링','RNA 구조 정렬'],
+    desc:'초경량 BERT 구조로 RNA 서열과 2차 구조를 함께 학습. 서열 유사성 낮은 ncRNA들도 기능적 클러스터링 가능.',
+    strength:'초경량(0.48M), 서열+구조 공동 학습, ncRNA 분류',
+    ref:'Akiyama & Sakakibara 2022. NAR Genomics and Bioinformatics'
   },
   {
-    id:'mixtral', name:'Mixtral 8×7B', org:'Mistral AI', year:2023,
-    params:47, paramsLabel:'~47B (활성 13B)', paramsB:47,
-    context:32000, contextLabel:'32K',
-    open:'open', openLabel:'공개',
-    uses:['다국어 처리','코딩','수학 추론','지식 기반 QA','고성능 오픈소스'],
-    desc:'Mixture of Experts(MoE) 구조. 총 47B 파라미터지만 추론 시 13B만 활성화되어 효율적. GPT-3.5 수준 성능.',
-    strength:'비용 대비 최고 성능, 다국어(영/불/독/스/이탈리아), 수학 추론'
+    id:'ernierna', name:'ERNIE-RNA', mod:'RNA', org:'여러 기관', year:2024,
+    paramsM:86, paramsLabel:'86M', contextBp:1024, contextLabel:'1,024 nt',
+    arch:'BERT + 구조 사전학습', tokenizer:'단일 뉴클레오티드',
+    open:true,
+    uses:['RNA 2차 구조 예측','RNA 기능 분류','RNA-단백질 상호작용'],
+    desc:'RNA 2차 구조 정보를 사전학습에 직접 통합. ERNIE 방식의 지식 강화 학습으로 구조-서열 동시 표현 습득.',
+    strength:'구조 정보 통합 사전학습, RNA 2차 구조 예측 SOTA',
+    ref:'Yin et al. 2024. bioRxiv'
+  },
+  // ── 단백질 ──
+  {
+    id:'esm2', name:'ESM-2', mod:'단백질', org:'Meta AI', year:2022,
+    paramsM:15000, paramsLabel:'8M–15B', contextBp:1022, contextLabel:'1,022 aa',
+    arch:'BERT (Encoder)', tokenizer:'아미노산 단위',
+    open:true,
+    uses:['단백질 구조 예측 (ESMFold)','기능 주석','변이 효과 예측','단백질 설계'],
+    desc:'6.5억 개 단백질 서열 UniRef로 학습. 8M~15B까지 다양한 규모. ESMFold와 결합하여 AlphaFold2에 필적하는 단백질 구조 예측. 단백질 공학의 핵심 기반 모델.',
+    strength:'단백질 구조·기능 통합 예측, 변이 효과 제로샷 예측, 8M~15B 스케일',
+    ref:'Lin et al. 2023. Science 379(6637):1123–1130'
   },
   {
-    id:'gemma2', name:'Gemma 2 27B', org:'Google', year:2024,
-    params:27, paramsLabel:'27B', paramsB:27,
-    context:8192, contextLabel:'8K',
-    open:'open', openLabel:'공개',
-    uses:['연구','파인튜닝','교육','온디바이스'],
-    desc:'Google의 책임감 있는 AI 연구용 경량 공개 모델 시리즈. Gemini 기술 기반으로 높은 효율성 달성.',
-    strength:'학술 연구, 파인튜닝 실험, 제한된 인프라 환경'
+    id:'esm3', name:'ESM-3', mod:'단백질', org:'EvolutionaryScale', year:2024,
+    paramsM:98000, paramsLabel:'98B', contextBp:2048, contextLabel:'2,048 aa',
+    arch:'Transformer (멀티모달)', tokenizer:'서열+구조+기능 통합',
+    open:false,
+    uses:['단백질 생성 설계','기능 유도 단백질 설계','신규 형광 단백질 발견','단백질 진화 모델링'],
+    desc:'서열·구조·기능을 통합 학습한 멀티모달 단백질 모델. 자연에 없는 새로운 형광 단백질 설계에 성공(실험 검증). 진화적으로 2억 년 떨어진 신규 단백질 발견.',
+    strength:'서열·구조·기능 통합 생성, 실험 검증된 신규 단백질 설계',
+    ref:'Hayes et al. 2024. Science 384(6699):eado9365'
   },
   {
-    id:'phi3', name:'Phi-3 Medium', org:'Microsoft', year:2024,
-    params:14, paramsLabel:'14B', paramsB:14,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['코딩','수학','추론','모바일','엣지 AI'],
-    desc:'고품질 데이터로 훈련한 소형 모델. "작지만 강한" 철학으로 수학·코딩에서 훨씬 큰 모델에 필적.',
-    strength:'모바일/엣지 배포, 수학·코딩 특화 태스크, 저자원 환경'
+    id:'glm2', name:'gLM-2', mod:'다중', org:'Arc Institute', year:2024,
+    paramsM:650, paramsLabel:'150M–650M', contextBp:8192, contextLabel:'8,192 bp',
+    arch:'Transformer (Encoder-Decoder)', tokenizer:'단일 염기',
+    open:true,
+    uses:['유전체 맥락 기반 단백질 표현','단백질 기능 예측','비코딩 조절 서열 분석','유전자 주석'],
+    desc:'단백질 서열과 주변 유전체 컨텍스트(인트론, 인핸서 등)를 함께 학습. 유전체 맥락이 단백질 기능 표현을 풍부하게 함을 입증. ESM-2 대비 기능 예측 성능 향상.',
+    strength:'유전체 컨텍스트 통합 단백질 표현, 비코딩 영역까지 함께 학습',
+    ref:'Cornman et al. 2024. bioRxiv'
   },
   {
-    id:'qwen25', name:'Qwen 2.5 72B', org:'Alibaba', year:2024,
-    params:72, paramsLabel:'72B', paramsB:72,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['중국어/영어 NLP','코딩','수학','멀티링구얼','에이전트'],
-    desc:'Alibaba의 대규모 다국어 모델. 중영 이중 언어에서 최고 성능. 수학·코딩 벤치마크에서 GPT-4 수준.',
-    strength:'중국어 포함 다국어 처리, 수학·코딩, 동아시아 언어 특화'
+    id:'nucleotidectformer', name:'Enformer', mod:'DNA', org:'DeepMind / Calico', year:2021,
+    paramsM:250, paramsLabel:'~250M', contextBp:196608, contextLabel:'196,608 bp',
+    arch:'Transformer + CNN', tokenizer:'원-핫 인코딩',
+    open:true,
+    uses:['유전자 발현 예측 (다조직)','에피제놈 예측','원거리 인핸서-프로모터 상호작용','eQTL 예측'],
+    desc:'196Kbp 컨텍스트로 인간·마우스 5,000개 이상 에피게놈·유전자발현 트랙을 동시 예측. 먼 거리 인핸서의 유전자 발현 조절 포착. 변이의 유전자 발현 효과 예측.',
+    strength:'196Kbp 컨텍스트, 다조직 유전자 발현 예측, 원거리 인핸서 포착',
+    ref:'Avsec et al. 2021. Nature Methods 18(10):1196–1203'
   },
   {
-    id:'deepseekr1', name:'DeepSeek-R1', org:'DeepSeek', year:2025,
-    params:671, paramsLabel:'671B (MoE)', paramsB:671,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['수학 증명','코딩 경쟁','과학 추론','연구'],
-    desc:'중국 DeepSeek이 공개한 추론 특화 오픈소스 모델. o1 수준의 추론 능력을 훨씬 적은 비용으로 달성해 충격.',
-    strength:'수학·과학 추론, 복잡한 코딩 문제, 오픈소스 최강 추론 모델'
+    id:'borzoi', name:'Borzoi', mod:'DNA', org:'여러 기관', year:2023,
+    paramsM:200, paramsLabel:'~200M', contextBp:524288, contextLabel:'524,288 bp',
+    arch:'Transformer + CNN (Enformer 확장)', tokenizer:'원-핫 인코딩',
+    open:true,
+    uses:['RNA-seq 발현 예측','스플라이싱 예측','eQTL 우선순위화','변이 조절 효과'],
+    desc:'Enformer의 확장 버전으로 524Kbp 컨텍스트. RNA-seq, ATAC-seq, ChIP-seq 등 수천 개 에피게놈 트랙 예측. 스플라이싱 비율까지 예측하는 것이 강점.',
+    strength:'524Kbp 초장거리 컨텍스트, RNA-seq + 스플라이싱 통합 예측',
+    ref:'Linder et al. 2023. bioRxiv'
   },
   {
-    id:'deepseekv3', name:'DeepSeek-V3', org:'DeepSeek', year:2024,
-    params:671, paramsLabel:'671B (MoE)', paramsB:671,
-    context:128000, contextLabel:'128K',
-    open:'open', openLabel:'공개',
-    uses:['코딩','범용 추론','다국어','저비용 배포'],
-    desc:'MoE 구조로 671B 전체 파라미터 중 추론 시 37B만 활성. GPT-4와 유사한 성능을 극도로 낮은 비용에 제공.',
-    strength:'비용 효율 극대화, 코딩, 범용 NLP'
-  },
-  {
-    id:'falcon180', name:'Falcon 180B', org:'TII', year:2023,
-    params:180, paramsLabel:'180B', paramsB:180,
-    context:2048, contextLabel:'2K',
-    open:'open', openLabel:'공개',
-    uses:['연구','NLP 기준점','텍스트 생성','파인튜닝 베이스'],
-    desc:'UAE Technology Innovation Institute의 대규모 공개 모델. 출시 당시 오픈소스 최대 규모.',
-    strength:'대규모 언어 모델 연구, 영어 텍스트 생성'
-  },
-  {
-    id:'bert', name:'BERT Large', org:'Google', year:2018,
-    params:0.34, paramsLabel:'340M', paramsB:0.34,
-    context:512, contextLabel:'512',
-    open:'open', openLabel:'공개',
-    uses:['텍스트 분류','NER','QA','감성 분석','파인튜닝 기반'],
-    desc:'Transformer Encoder 기반 양방향 언어 모델. 사전 학습 + 파인튜닝 패러다임을 정립한 역사적 모델.',
-    strength:'텍스트 분류, 개체명 인식, 시퀀스 레이블링, NLU 태스크'
-  },
-  {
-    id:'t5', name:'T5-11B', org:'Google', year:2020,
-    params:11, paramsLabel:'11B', paramsB:11,
-    context:512, contextLabel:'512',
-    open:'open', openLabel:'공개',
-    uses:['번역','요약','QA','텍스트 분류','다목적 NLP'],
-    desc:'모든 NLP 태스크를 텍스트-to-텍스트로 통합한 모델. 다양한 태스크를 단일 프레임워크로 처리.',
-    strength:'번역, 요약, 멀티태스크 파인튜닝'
-  },
-  {
-    id:'palm2', name:'PaLM 2', org:'Google', year:2023,
-    params:340, paramsLabel:'340B (추정)', paramsB:340,
-    context:32000, contextLabel:'32K',
-    open:'closed', openLabel:'비공개',
-    uses:['다국어','코딩','의료','수학','Google 제품 통합'],
-    desc:'Bard/Gemini 이전 Google의 주력 모델. 다국어 성능 및 의료·법률 도메인에서 강점.',
-    strength:'다국어 처리, 의료/법률 도메인, Workspace 통합'
-  },
-  {
-    id:'starcoder2', name:'StarCoder2 15B', org:'BigCode', year:2024,
-    params:15, paramsLabel:'15B', paramsB:15,
-    context:16000, contextLabel:'16K',
-    open:'open', openLabel:'공개',
-    uses:['코드 완성','코드 설명','버그 수정','코드 번역','개발 도구'],
-    desc:'600개 이상 프로그래밍 언어로 훈련된 코딩 특화 모델. IDE 플러그인, Copilot 대체재로 활용 가능.',
-    strength:'코드 자동완성, 다언어 코드 변환, 코드 문서화'
-  },
-  {
-    id:'whisper', name:'Whisper Large v3', org:'OpenAI', year:2023,
-    params:1.5, paramsLabel:'1.5B', paramsB:1.5,
-    context:null, contextLabel:'음성 30초',
-    open:'open', openLabel:'공개',
-    uses:['음성 인식','음성 번역','자막 생성','다국어 전사'],
-    desc:'99개 언어 음성 인식 및 번역. 한국어 포함 다국어 고정밀 전사. ASR 태스크 전용 모델.',
-    strength:'다국어 음성 인식, 음성→텍스트 번역, 실시간 자막'
+    id:'codonbert', name:'CodonBERT', mod:'RNA', org:'여러 기관', year:2023,
+    paramsM:86, paramsLabel:'86M', contextBp:1024, contextLabel:'1,024 코돈',
+    arch:'BERT (Encoder)', tokenizer:'코돈 단위',
+    open:true,
+    uses:['코돈 최적화','mRNA 안정성 예측','단백질 발현 최적화','mRNA 백신 설계'],
+    desc:'코돈 단위 토크나이저로 mRNA 코딩 서열을 학습. mRNA 안정성·단백질 발현량 예측, 코돈 최적화에 특화. mRNA 백신·치료제 설계에 응용.',
+    strength:'mRNA 안정성·코돈 최적화 특화, 백신 및 치료용 mRNA 설계',
+    ref:'Xue et al. 2023. EMNLP 2023'
   },
 ];
 
-const USECASES = [
+const ARCHITECTURES = [
   {
-    icon:'📱', title:'엣지 / 온디바이스', range:'< 7B',
-    desc:'스마트폰, IoT 기기, 오프라인 환경에서 실행. 인터넷 없이 동작하며 프라이버시 보호에 유리.',
-    models:['Phi-3 Mini', 'Gemma 2B', 'Llama 3.2 3B', 'Mistral 7B']
+    icon:'🔤', name:'BERT Encoder',
+    models:'DNABERT, DNABERT-2, RNA-FM, ESM-2',
+    desc:'양방향 어텐션으로 전체 서열 컨텍스트를 동시에 학습. Mask Language Modeling 사전학습.',
+    pro:'✅ 양방향 컨텍스트 풍부',
+    con:'❌ 최대 길이 제한 (보통 512–4K bp)'
   },
   {
-    icon:'🏢', title:'엔터프라이즈 로컬', range:'7B – 40B',
-    desc:'사내 서버에 배포해 API 비용 없이 내부 문서 QA, 코드 리뷰, 보고서 요약 등에 활용.',
-    models:['Mistral 7B', 'Llama 3.1 8B', 'Llama 3.1 70B', 'Mixtral 8x7B']
+    icon:'🐍', name:'SSM / Hyena',
+    models:'HyenaDNA, Evo, Evo 2, Caduceus',
+    desc:'State Space Model 기반. Transformer의 2차 복잡도를 선형으로 낮추어 수백만 bp 처리 가능.',
+    pro:'✅ 1M bp 이상 초장거리 컨텍스트',
+    con:'❌ 어텐션 해석 어려움'
   },
   {
-    icon:'🔬', title:'연구 / 파인튜닝 기반', range:'7B – 70B',
-    desc:'논문 재현, 도메인 특화 파인튜닝의 출발점. 충분한 베이스라인 성능과 오픈 가중치 제공.',
-    models:['Llama 3.1 8/70B', 'Mistral 7B', 'Falcon 180B', 'BERT', 'T5']
+    icon:'🧱', name:'CNN + Transformer',
+    models:'Enformer, Borzoi, SpliceAI',
+    desc:'CNN으로 지역 패턴, Transformer로 장거리 의존성을 함께 포착. 유전자 발현 예측에 강점.',
+    pro:'✅ 에피게놈·발현 예측 SOTA',
+    con:'❌ 생성적 용도에는 부적합'
   },
   {
-    icon:'💬', title:'대화형 서비스', range:'70B – 200B',
-    desc:'고객 지원, 챗봇, 개인 비서. 빠른 응답 속도와 자연스러운 대화 흐름이 핵심.',
-    models:['GPT-3.5 Turbo', 'Claude 3.5 Sonnet', 'Gemini 2.0 Flash']
+    icon:'🔀', name:'BigBird / 희소 어텐션',
+    models:'GENA-LM',
+    desc:'Global + Local + Random 어텐션으로 긴 서열에서 2차 복잡도 회피. 긴 게놈 구간 처리.',
+    pro:'✅ 4K+ bp 처리 가능',
+    con:'❌ 풀 어텐션보다 표현력 낮을 수 있음'
   },
   {
-    icon:'💻', title:'코드 생성 & 디버깅', range:'7B – 전체',
-    desc:'GitHub Copilot 같은 코드 자동완성, 버그 수정, 코드 리뷰, 테스트 생성.',
-    models:['StarCoder2 15B', 'Claude 3.5 Sonnet', 'GPT-4', 'DeepSeek-R1']
+    icon:'🧬', name:'멀티모달 통합',
+    models:'ESM-3, gLM-2, Evo',
+    desc:'서열+구조+기능, 또는 DNA+단백질을 동시에 학습. 단일 모달리티 모델의 한계 극복.',
+    pro:'✅ 크로스 모달 이해 및 생성',
+    con:'❌ 학습 복잡도 높음'
   },
   {
-    icon:'🧮', title:'수학 / 과학 추론', range:'70B+ 또는 추론 특화',
-    desc:'수식 증명, 과학 논문 분석, 경쟁 알고리즘 문제. 단계별 논리적 사고가 필수.',
-    models:['o3/o4-mini', 'DeepSeek-R1', 'GPT-4', 'Llama 3.1 405B']
+    icon:'🧩', name:'ResNet 1D CNN',
+    models:'SpliceAI, DeepSEA, Basenji',
+    desc:'1D Convolutional Neural Network 기반. 언어 모델은 아니지만 유전체 딥러닝의 초기 표준.',
+    pro:'✅ 빠른 추론, 임상 검증',
+    con:'❌ 장거리 의존성 포착 어려움'
+  },
+];
+
+const TASKS = [
+  {
+    icon:'✂️', title:'스플라이스 사이트 예측',
+    models:['SpliceAI', 'SpliceBERT', 'DNABERT', 'Pangolin'],
+    desc:'정상·이상 스플라이스 사이트 위치 예측. 변이로 인한 이상 스플라이싱 가능성 평가. 희귀 질환 변이 해석에 핵심.'
   },
   {
-    icon:'📄', title:'장문 문서 처리', range:'대형 컨텍스트',
-    desc:'계약서, 연구 논문, 전체 코드베이스를 한 번에 분석. 긴 컨텍스트 창이 핵심.',
-    models:['Gemini 1.5 Pro (1M)', 'Claude 3 Opus (200K)', 'o3 (200K)']
+    icon:'🔬', title:'변이 효과 예측 (VEP)',
+    models:['Evo', 'Evo 2', 'Nucleotide Transformer', 'ESM-2'],
+    desc:'SNV·InDel이 유전체 기능(발현, 스플라이싱, 단백질 기능)에 미치는 영향 제로샷 예측. WGS 변이 우선순위화.'
   },
   {
-    icon:'🌍', title:'다국어 처리', range:'70B+',
-    desc:'한국어·중국어·일본어 등 비영어권 언어의 번역, 이해, 생성에 특화.',
-    models:['Qwen 2.5 72B', 'Gemini 1.5 Pro', 'PaLM 2', 'GPT-4']
+    icon:'📊', title:'유전자 발현 예측',
+    models:['Enformer', 'Borzoi', 'Nucleotide Transformer'],
+    desc:'DNA 서열로부터 조직별 유전자 발현량·에피게놈 트랙 예측. 인핸서-프로모터 상호작용 모델링.'
   },
   {
-    icon:'🖼️', title:'멀티모달 (텍스트+이미지)', range:'대형 모델',
-    desc:'이미지 이해, 차트 분석, 의료 영상, 제품 사진 설명 등 시각 정보 처리.',
-    models:['GPT-4o', 'Gemini 1.5 Pro', 'Claude 3 Opus']
+    icon:'🧫', title:'단백질 구조 예측',
+    models:['ESM-2 (ESMFold)', 'ESM-3'],
+    desc:'아미노산 서열로부터 3D 단백질 구조 예측. AlphaFold2에 필적. 신규 단백질 설계 기반 모델.'
   },
   {
-    icon:'🎙️', title:'음성 인식 / 전사', range:'전용 모델',
-    desc:'회의 녹음 전사, 다국어 자막 생성, 음성 번역. LLM이 아닌 전용 ASR 모델 사용.',
-    models:['Whisper Large v3']
+    icon:'🧬', title:'에피게놈 예측',
+    models:['Enformer', 'Borzoi', 'HyenaDNA', 'Nucleotide Transformer'],
+    desc:'ATAC-seq, ChIP-seq, DNASE-seq 등 에피게놈 트랙 예측. 원거리 조절 요소 식별.'
+  },
+  {
+    icon:'💊', title:'mRNA 백신·치료제 설계',
+    models:['CodonBERT', 'RNA-FM'],
+    desc:'mRNA 안정성·번역 효율 예측, 코돈 최적화. COVID-19 백신 mRNA 서열 최적화 등에 응용.'
+  },
+  {
+    icon:'🔭', title:'CRISPR 가이드 설계',
+    models:['Evo', 'Evo 2'],
+    desc:'gRNA 효율 및 off-target 예측. 신규 CRISPR 시스템 발견. 유전체 편집 전략 최적화.'
+  },
+  {
+    icon:'🌐', title:'비코딩 RNA 기능',
+    models:['RNA-FM', 'RNAbert', 'ERNIE-RNA'],
+    desc:'lncRNA, miRNA, circRNA 등 비코딩 RNA의 구조·기능·상호작용 예측.'
+  },
+  {
+    icon:'🧪', title:'단백질 기능 설계',
+    models:['ESM-3', 'gLM-2', 'Evo'],
+    desc:'자연에 없는 새로운 기능을 가진 단백질 서열 생성. 효소 활성·결합 특이성 최적화.'
+  },
+  {
+    icon:'📍', title:'다종 게놈 전이 학습',
+    models:['DNABERT-2', 'Nucleotide Transformer', 'Evo 2'],
+    desc:'다수 종 게놈으로 학습한 표현을 타겟 종에 전이. 비모델 생물 연구에 활용.'
   },
 ];
 
 const TIMELINE = [
-  { date:'2017년 6월', title:'Transformer 등장', desc:'「Attention is All You Need」 (Vaswani et al.) — 현대 LLM의 기반이 된 아키텍처 발표' },
-  { date:'2018년 10월', title:'BERT', desc:'Google이 Encoder 기반 양방향 언어 모델 공개. 파인튜닝 패러다임 정립' },
-  { date:'2019년 2월', title:'GPT-2 (1.5B)', desc:'OpenAI가 "너무 위험하다"며 처음에는 부분 공개만 진행한 텍스트 생성 모델' },
-  { date:'2020년 5월', title:'GPT-3 (175B)', desc:'Few-shot learning으로 AI 역사를 바꾼 모델. API로 처음 공개 제공' },
-  { date:'2022년 11월', title:'ChatGPT 출시', desc:'GPT-3.5 기반 대화형 인터페이스. 출시 5일 만에 100만 사용자 달성' },
-  { date:'2023년 2월', title:'LLaMA 1 공개', desc:'Meta의 첫 오픈소스 LLM. 연구 커뮤니티에 유출되며 오픈소스 생태계 폭발' },
-  { date:'2023년 3월', title:'GPT-4 출시', desc:'멀티모달 지원, 전문 시험에서 인간 상위 10% 수준 성능 달성' },
-  { date:'2023년 9월', title:'Mistral 7B', desc:'"작지만 강한" 7B 모델. 같은 크기 모델 중 압도적 성능으로 오픈소스 판도 변화' },
-  { date:'2024년 4월', title:'Llama 3 공개', desc:'Meta가 8B/70B 모델을 상업적 이용 허가로 공개. 오픈소스 표준으로 자리잡음' },
-  { date:'2024년 5월', title:'Gemini 1.5 Pro', desc:'1M 토큰 컨텍스트 창 공개. 책 전체·긴 영상을 한 번에 처리 가능' },
-  { date:'2024년 7월', title:'Llama 3.1 405B', desc:'GPT-4 수준 오픈소스 모델 등장. 상업적 이용 가능한 최초의 초대형 공개 모델' },
-  { date:'2025년 1월', title:'DeepSeek-R1', desc:'중국 DeepSeek이 o1 수준 추론 오픈소스 모델 공개. AI 업계 전반에 충격' },
-  { date:'2025년 4월', title:'GPT-4.1 / o3', desc:'OpenAI의 최신 추론 특화 모델. 코딩·수학에서 새로운 최고 성능 기록' },
+  { date:'2018', title:'BERT 등장 (NLP)', desc:'Transformer Encoder 기반 사전학습 패러다임 확립. 이후 모든 gLM의 설계 영향.' },
+  { date:'2019', title:'SpliceAI (Jaganathan et al.)', desc:'CNN 기반 스플라이싱 예측. 심층 내재 변이의 임상적 해석 혁신. Cell 발표.' },
+  { date:'2020', title:'DeepSEA·Basenji 발전', desc:'CNN 기반 에피게놈 예측 모델 성숙. 조절 요소 예측 기반 마련.' },
+  { date:'2021', title:'DNABERT (Ji et al.)', desc:'DNA 서열에 처음으로 BERT 적용. Bioinformatics 발표. gLM 연구 시대 개막.' },
+  { date:'2021', title:'Enformer (DeepMind)', desc:'196Kbp 컨텍스트로 유전자 발현 예측. Nature Methods. 원거리 인핸서 포착.' },
+  { date:'2022', title:'ESM-2 (Meta)', desc:'15B 파라미터 단백질 언어 모델. ESMFold로 AlphaFold에 필적하는 구조 예측.' },
+  { date:'2022', title:'RNA-FM 등장', desc:'ncRNA 특화 언어 모델. RNA 구조 및 기능 예측의 기반 마련.' },
+  { date:'2023', title:'HyenaDNA', desc:'SSM 기반 1M bp 컨텍스트 DNA 모델. ICML. 장거리 유전체 모델링 패러다임 전환.' },
+  { date:'2023', title:'DNABERT-2', desc:'BPE 토크나이저, 다종 게놈 학습. k-mer 방식의 한계 극복.' },
+  { date:'2023', title:'Nucleotide Transformer', desc:'2.5B DNA 모델. Nature Methods. 인간+850 종 게놈 학습. 18개 태스크 벤치마크.' },
+  { date:'2023', title:'SpliceBERT·Pangolin', desc:'스플라이싱 특화 언어 모델 등장. 조직 특이적 스플라이싱 예측 가능.' },
+  { date:'2023', title:'Caduceus', desc:'BiMamba 구조. 양방향 SSM. 긴 컨텍스트와 양방향성 동시 달성.' },
+  { date:'2024', title:'Evo 7B (Arc Institute)', desc:'7B 파라미터. DNA→단백질 통합. Science 발표. CRISPR 설계, 유전체 생성 가능.' },
+  { date:'2024', title:'ESM-3 (EvolutionaryScale)', desc:'98B 단백질 멀티모달 모델. 실험 검증된 신규 형광 단백질 설계. Science 발표.' },
+  { date:'2024', title:'gLM-2 (Arc Institute)', desc:'유전체 컨텍스트 통합 단백질 모델. 비코딩 서열이 단백질 표현을 향상함을 입증.' },
+  { date:'2024', title:'Borzoi', desc:'524Kbp 컨텍스트. RNA-seq + 스플라이싱 예측 통합. Enformer의 진화형.' },
+  { date:'2025', title:'Evo 2 (40B)', desc:'9조 뉴클레오티드, 128K 종 학습. 오픈소스 최대 gLM. 임상 변이 해석 SOTA.' },
 ];
 
-// ─── State ───────────────────────────────────────────────────────────────────
-let sortCol = 'params';
-let sortDir = 'desc';
-let activeOrgs = new Set(['all']);
-let activeOpen = 'all';
-let searchQuery = '';
-
-// ─── Init ─────────────────────────────────────────────────────────────────────
+// ─── State ────────────────────────────────────────────────────────────────────
+let sortCol='params', sortDir='desc', activeMod='all', searchQuery='';
 document.getElementById('modelCount').textContent = MODELS.length;
 
-// Org filter
-const orgs = ['전체', ...new Set(MODELS.map(m => m.org))];
-const orgFilter = document.getElementById('orgFilter');
-orgs.forEach(org => {
-  const chip = document.createElement('span');
-  chip.className = 'chip' + (org === '전체' ? ' active' : '');
-  chip.dataset.org = org === '전체' ? 'all' : org;
-  chip.textContent = org;
+// Modality filter
+document.querySelectorAll('#modFilter .chip').forEach(chip => {
   chip.addEventListener('click', () => {
-    activeOrgs = new Set([chip.dataset.org]);
-    document.querySelectorAll('#orgFilter .chip').forEach(c => c.classList.remove('active'));
-    chip.classList.add('active');
-    renderTable();
-  });
-  orgFilter.appendChild(chip);
-});
-
-// Open filter
-document.querySelectorAll('#openFilter .chip').forEach(chip => {
-  chip.addEventListener('click', () => {
-    activeOpen = chip.dataset.open;
-    document.querySelectorAll('#openFilter .chip').forEach(c => c.classList.remove('active'));
+    activeMod = chip.dataset.mod;
+    document.querySelectorAll('#modFilter .chip').forEach(c => c.classList.remove('active'));
     chip.classList.add('active');
     renderTable();
   });
@@ -859,303 +763,298 @@ document.getElementById('searchInput').addEventListener('input', e => {
   renderTable();
 });
 
-// ─── Table ───────────────────────────────────────────────────────────────────
-const MAX_PARAMS = Math.max(...MODELS.filter(m => m.paramsB).map(m => m.paramsB));
-const MAX_CTX = Math.max(...MODELS.filter(m => m.context).map(m => m.context));
-
-function formatParams(m) {
-  return m.paramsLabel;
-}
+// ─── Table ────────────────────────────────────────────────────────────────────
+const MAX_PARAMS = Math.max(...MODELS.map(m => m.paramsM));
+const MAX_CTX    = Math.max(...MODELS.map(m => m.contextBp));
 
 function renderTable() {
   const tbody = document.getElementById('modelBody');
   const filtered = MODELS.filter(m => {
-    const orgOk = activeOrgs.has('all') || activeOrgs.has(m.org);
-    const openOk = activeOpen === 'all' || m.open === activeOpen;
-    const searchOk = !searchQuery || m.name.toLowerCase().includes(searchQuery) || m.org.toLowerCase().includes(searchQuery);
-    return orgOk && openOk && searchOk;
+    const modOk = activeMod === 'all' || m.mod === activeMod;
+    const srchOk = !searchQuery || m.name.toLowerCase().includes(searchQuery) || m.org.toLowerCase().includes(searchQuery);
+    return modOk && srchOk;
   });
 
   filtered.sort((a, b) => {
-    let av = a[sortCol], bv = b[sortCol];
-    if (sortCol === 'params') { av = a.paramsB || 0; bv = b.paramsB || 0; }
+    let av = sortCol === 'params' ? a.paramsM : sortCol === 'context' ? a.contextBp : a[sortCol];
+    let bv = sortCol === 'params' ? b.paramsM : sortCol === 'context' ? b.contextBp : b[sortCol];
     if (av == null) av = -Infinity;
     if (bv == null) bv = -Infinity;
     if (typeof av === 'string') av = av.toLowerCase();
     if (typeof bv === 'string') bv = bv.toLowerCase();
-    if (av < bv) return sortDir === 'asc' ? -1 : 1;
-    if (av > bv) return sortDir === 'asc' ? 1 : -1;
-    return 0;
+    return sortDir === 'asc' ? (av < bv ? -1 : av > bv ? 1 : 0) : (av > bv ? -1 : av < bv ? 1 : 0);
   });
 
   tbody.innerHTML = '';
   filtered.forEach(m => {
-    const paramPct = m.paramsB ? Math.max(2, (m.paramsB / MAX_PARAMS) * 200) : 2;
-    const ctxPct = m.context ? Math.max(2, (m.context / MAX_CTX) * 120) : 2;
-    const badgeClass = m.open === 'open' ? 'badge-open' : m.open === 'closed' ? 'badge-closed' : 'badge-partial';
+    const pPct = Math.max(2, (Math.log10(m.paramsM + 1) / Math.log10(MAX_PARAMS + 1)) * 180);
+    const cPct = Math.max(2, (Math.log10(m.contextBp) / Math.log10(MAX_CTX)) * 100);
+    const col = MOD_COLOR[m.mod] || '#888';
+    const badgeCls = MOD_BADGE[m.mod] || '';
     const tr = document.createElement('tr');
     tr.innerHTML = `
-      <td class="name">${m.name}</td>
-      <td class="org">${m.org}</td>
+      <td class="name"><span class="mod-dot" style="background:${col}"></span>${m.name}</td>
+      <td><span class="badge ${badgeCls}">${m.mod}</span></td>
+      <td style="color:var(--text-muted);font-size:.82rem;">${m.org}</td>
       <td>
         <div class="param-bar-wrap">
-          <div class="param-bar" style="width:${paramPct}px"></div>
+          <div class="param-bar" style="width:${pPct}px;background:linear-gradient(90deg,${col},${col}88)"></div>
           <span class="param-val">${m.paramsLabel}</span>
         </div>
       </td>
       <td>
-        <div style="display:flex;align-items:center;gap:.5rem;">
-          ${m.context ? `<div class="ctx-bar" style="width:${ctxPct}px"></div>` : ''}
-          <span style="font-size:.82rem;color:var(--text)">${m.contextLabel}</span>
+        <div style="display:flex;align-items:center;gap:.45rem;">
+          <div class="ctx-bar" style="width:${cPct}px;background:linear-gradient(90deg,var(--accent2),var(--accent3))"></div>
+          <span style="font-size:.8rem;color:var(--text)">${m.contextLabel}</span>
         </div>
       </td>
-      <td style="color:var(--text-muted);font-size:.85rem;">${m.year}</td>
-      <td><span class="badge ${badgeClass}">${m.openLabel}</span></td>
-      <td>${m.uses.slice(0,3).map(u => `<span class="use-tag">${u}</span>`).join('')}${m.uses.length > 3 ? `<span class="use-tag">+${m.uses.length-3}</span>` : ''}</td>
+      <td style="color:var(--text-muted);font-size:.83rem;">${m.year}</td>
+      <td style="font-size:.78rem;color:var(--text-muted);">${m.arch}</td>
+      <td>${m.uses.slice(0,2).map(u=>`<span class="use-tag">${u}</span>`).join('')}${m.uses.length>2?`<span class="use-tag">+${m.uses.length-2}</span>`:''}</td>
     `;
     tr.addEventListener('click', () => openModal(m));
     tbody.appendChild(tr);
   });
 }
 
-// Column sort
 document.querySelectorAll('thead th[data-col]').forEach(th => {
   th.addEventListener('click', () => {
     const col = th.dataset.col;
-    if (sortCol === col) {
-      sortDir = sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      sortCol = col;
-      sortDir = col === 'params' || col === 'context' || col === 'year' ? 'desc' : 'asc';
-    }
-    document.querySelectorAll('thead th').forEach(h => {
-      h.classList.remove('sort-asc', 'sort-desc');
-    });
+    sortDir = sortCol === col ? (sortDir === 'asc' ? 'desc' : 'asc') : (col === 'params' || col === 'context' || col === 'year' ? 'desc' : 'asc');
+    sortCol = col;
+    document.querySelectorAll('thead th').forEach(h => h.classList.remove('sort-asc','sort-desc'));
     th.classList.add(sortDir === 'asc' ? 'sort-asc' : 'sort-desc');
     renderTable();
   });
 });
-
-// Initial render with default sort column highlighted
 document.querySelector('thead th[data-col="params"]').classList.add('sort-desc');
 renderTable();
 
-// ─── Modal ───────────────────────────────────────────────────────────────────
+// ─── Modal ────────────────────────────────────────────────────────────────────
 function openModal(m) {
   document.getElementById('mTitle').textContent = m.name;
-  document.getElementById('mOrg').textContent = m.org + ' · ' + m.year + '년';
+  document.getElementById('mMeta').textContent = `${m.org} · ${m.year}년 · ${m.mod} 모델`;
   document.getElementById('mGrid').innerHTML = `
     <div class="modal-stat"><div class="ms-val">${m.paramsLabel}</div><div class="ms-label">파라미터</div></div>
     <div class="modal-stat"><div class="ms-val">${m.contextLabel}</div><div class="ms-label">컨텍스트 길이</div></div>
-    <div class="modal-stat"><div class="ms-val">${m.openLabel}</div><div class="ms-label">오픈소스 여부</div></div>
-    <div class="modal-stat"><div class="ms-val">${m.uses.length}가지</div><div class="ms-label">주요 용도</div></div>
+    <div class="modal-stat"><div class="ms-val">${m.open?'공개':'비공개'}</div><div class="ms-label">오픈소스</div></div>
   `;
   document.getElementById('mUses').innerHTML = `
-    <h4>주요 용도</h4>
+    <h4>주요 응용 태스크</h4>
     <div style="display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.4rem;">
-      ${m.uses.map(u => `<span class="use-tag" style="font-size:.82rem;padding:.25rem .6rem;">${u}</span>`).join('')}
+      ${m.uses.map(u=>`<span class="use-tag" style="font-size:.82rem;padding:.22rem .6rem;">${u}</span>`).join('')}
     </div>
   `;
-  document.getElementById('mDesc').innerHTML = `<h4>모델 설명</h4><p style="margin-top:.4rem;">${m.desc}</p>`;
-  document.getElementById('mStrength').innerHTML = `<h4>강점</h4><p style="margin-top:.4rem;">${m.strength}</p>`;
+  document.getElementById('mDesc').innerHTML = `<h4>모델 설명</h4><p style="margin-top:.35rem;">${m.desc}</p>`;
+  document.getElementById('mStrength').innerHTML = `<h4>핵심 강점</h4><p style="margin-top:.35rem;">${m.strength}</p>`;
+  document.getElementById('mRef').innerHTML = `<h4>참고 문헌</h4><p style="margin-top:.35rem;font-size:.8rem;color:var(--text-muted);">${m.ref}</p>`;
   document.getElementById('modalOverlay').classList.add('open');
 }
+document.getElementById('modalClose').addEventListener('click', () => document.getElementById('modalOverlay').classList.remove('open'));
+document.getElementById('modalOverlay').addEventListener('click', e => { if(e.target===document.getElementById('modalOverlay')) document.getElementById('modalOverlay').classList.remove('open'); });
 
-document.getElementById('modalClose').addEventListener('click', () => {
-  document.getElementById('modalOverlay').classList.remove('open');
-});
-document.getElementById('modalOverlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('modalOverlay'))
-    document.getElementById('modalOverlay').classList.remove('open');
-});
-
-// ─── Charts ──────────────────────────────────────────────────────────────────
-const chartDefaults = {
-  color: '#8892b0',
-  borderColor: '#2e3250',
-};
-Chart.defaults.color = '#8892b0';
-Chart.defaults.borderColor = '#2e3250';
+// ─── Charts ───────────────────────────────────────────────────────────────────
+Chart.defaults.color = '#7a9e8a';
+Chart.defaults.borderColor = '#1f3329';
 Chart.defaults.font.family = "'Apple SD Gothic Neo', -apple-system, sans-serif";
 
-// Bar chart — representative models per org
-const barModels = [
-  { name:'GPT-4', params:1800, color:'#7c6af7' },
-  { name:'DeepSeek-R1', params:671, color:'#56cfb2' },
-  { name:'Falcon 180B', params:180, color:'#f7a35c' },
-  { name:'GPT-3', params:175, color:'#e95f5f' },
-  { name:'Llama 3.1 405B', params:405, color:'#7c6af7' },
-  { name:'Claude 3 Opus', params:300, color:'#a07cf7' },
-  { name:'PaLM 2', params:340, color:'#56cfb2' },
-  { name:'Qwen 2.5 72B', params:72, color:'#f7d35c' },
-];
-barModels.sort((a,b)=>b.params-a.params);
-
+// Bar — top models by params
+const barData = [...MODELS].sort((a,b)=>b.paramsM-a.paramsM).slice(0,12);
 new Chart(document.getElementById('barChart'), {
-  type: 'bar',
-  data: {
-    labels: barModels.map(m => m.name),
-    datasets: [{
-      label: '파라미터 (B)',
-      data: barModels.map(m => m.params),
-      backgroundColor: barModels.map(m => m.color + 'cc'),
-      borderColor: barModels.map(m => m.color),
-      borderWidth: 1,
-      borderRadius: 4,
+  type:'bar',
+  data:{
+    labels: barData.map(m=>m.name),
+    datasets:[{
+      label:'파라미터 (M)',
+      data: barData.map(m=>m.paramsM),
+      backgroundColor: barData.map(m=>(MOD_COLOR[m.mod]||'#888')+'bb'),
+      borderColor: barData.map(m=>MOD_COLOR[m.mod]||'#888'),
+      borderWidth:1, borderRadius:4,
     }]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: { legend: { display: false }, tooltip: {
-      callbacks: { label: ctx => ` ${ctx.parsed.y.toLocaleString()} B` }
-    }},
-    scales: {
-      x: { ticks: { maxRotation: 30, font: { size: 10 } }, grid: { display: false } },
-      y: { ticks: { callback: v => v >= 1000 ? (v/1000)+'T' : v+'B' }, grid: { color: '#2e3250' } }
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{
+        const v=ctx.parsed.y;
+        return ` ${v>=1000?(v/1000).toFixed(1)+'B':v+'M'} params`;
+      }}}
+    },
+    scales:{
+      x:{ticks:{maxRotation:35,font:{size:9}},grid:{display:false}},
+      y:{type:'logarithmic',ticks:{callback:v=>v>=1000?(v/1000)+'B':v+'M'},grid:{color:'#1f3329'}}
     }
   }
 });
 
-// Pie chart — open/closed/partial
-const openCounts = { open: 0, closed: 0, partial: 0 };
-MODELS.forEach(m => openCounts[m.open]++);
-new Chart(document.getElementById('pieChart'), {
-  type: 'doughnut',
-  data: {
-    labels: ['오픈소스', '비공개', '부분공개'],
-    datasets: [{
-      data: [openCounts.open, openCounts.closed, openCounts.partial],
-      backgroundColor: ['#56cfb2cc', '#7c6af7cc', '#f7a35ccc'],
-      borderColor: ['#56cfb2', '#7c6af7', '#f7a35c'],
-      borderWidth: 2,
+// Pie — modality distribution
+const modCounts={};
+MODELS.forEach(m=>{modCounts[m.mod]=(modCounts[m.mod]||0)+1;});
+const modKeys=Object.keys(modCounts);
+new Chart(document.getElementById('pieChart'),{
+  type:'doughnut',
+  data:{
+    labels:modKeys,
+    datasets:[{
+      data:modKeys.map(k=>modCounts[k]),
+      backgroundColor:modKeys.map(k=>(MOD_COLOR[k]||'#888')+'bb'),
+      borderColor:modKeys.map(k=>MOD_COLOR[k]||'#888'),
+      borderWidth:2,
     }]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { position: 'bottom', labels: { padding: 16, font: { size: 12 } } },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.parsed}개` } }
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{position:'bottom',labels:{padding:14,font:{size:11}}},
+      tooltip:{callbacks:{label:ctx=>` ${ctx.label}: ${ctx.parsed}개`}}
     },
-    cutout: '60%',
+    cutout:'60%'
   }
 });
 
-// Line chart — max params over time
-const paramTimeline = [
-  { year: 2018, model: 'BERT', params: 0.34 },
-  { year: 2019, model: 'GPT-2', params: 1.5 },
-  { year: 2020, model: 'GPT-3', params: 175 },
-  { year: 2021, model: 'Switch-C', params: 1571 },
-  { year: 2022, model: 'PaLM', params: 540 },
-  { year: 2023, model: 'GPT-4(추정)', params: 1800 },
-  { year: 2024, model: 'Llama3.1 405B', params: 405 },
-  { year: 2025, model: 'DeepSeek-R1', params: 671 },
+// Line — max params over years
+const yearData=[
+  {year:'2019',label:'SpliceAI',p:0.4},
+  {year:'2021',label:'DNABERT',p:110},
+  {year:'2021',label:'Enformer',p:250},
+  {year:'2022',label:'ESM-2',p:15000},
+  {year:'2023',label:'NT 2.5B',p:2500},
+  {year:'2023',label:'HyenaDNA',p:6.6},
+  {year:'2024',label:'Evo 7B',p:7000},
+  {year:'2024',label:'ESM-3',p:98000},
+  {year:'2025',label:'Evo 2',p:40000},
 ];
-new Chart(document.getElementById('lineChart'), {
-  type: 'line',
-  data: {
-    labels: paramTimeline.map(d => d.year + ''),
-    datasets: [{
-      label: '대표 모델 파라미터 (B)',
-      data: paramTimeline.map(d => d.params),
-      borderColor: '#7c6af7',
-      backgroundColor: '#7c6af720',
-      fill: true,
-      tension: 0.3,
-      pointBackgroundColor: '#7c6af7',
-      pointRadius: 5,
-      pointHoverRadius: 8,
+new Chart(document.getElementById('lineChart'),{
+  type:'line',
+  data:{
+    labels:yearData.map(d=>d.year),
+    datasets:[{
+      label:'대표 gLM 파라미터 (M)',
+      data:yearData.map(d=>d.p),
+      borderColor:'#3ecf8e',
+      backgroundColor:'#3ecf8e18',
+      fill:true,
+      tension:0.3,
+      pointBackgroundColor:'#3ecf8e',
+      pointRadius:5,
+      pointHoverRadius:8,
     }]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: {
-        title: ctx => paramTimeline[ctx[0].dataIndex].model + ' (' + ctx[0].label + ')',
-        label: ctx => ` ${ctx.parsed.y.toLocaleString()} B`
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{
+        title:ctx=>yearData[ctx[0].dataIndex].label+' ('+ctx[0].label+')',
+        label:ctx=>{const v=ctx.parsed.y; return ` ${v>=1000?(v/1000).toFixed(1)+'B':v+'M'} params`;}
       }}
     },
-    scales: {
-      y: {
-        type: 'logarithmic',
-        ticks: { callback: v => v >= 1000 ? (v/1000)+'T' : v+'B' },
-        grid: { color: '#2e3250' }
-      },
-      x: { grid: { display: false } }
+    scales:{
+      y:{type:'logarithmic',ticks:{callback:v=>v>=1000?(v/1000)+'B':v+'M'},grid:{color:'#1f3329'}},
+      x:{grid:{display:false}}
     }
   }
 });
 
-// Bubble chart — params vs context
-const bubbleData = MODELS.filter(m => m.paramsB && m.context).map(m => ({
-  x: Math.log10(m.paramsB + 0.01),
-  y: Math.log10(m.context),
-  r: Math.max(4, Math.min(20, Math.sqrt(m.paramsB) * 0.8)),
-  label: m.name,
-  color: m.open === 'open' ? '#56cfb2' : m.open === 'closed' ? '#7c6af7' : '#f7a35c'
-}));
-
-new Chart(document.getElementById('bubbleChart'), {
-  type: 'bubble',
-  data: {
-    datasets: [{
-      label: '모델',
-      data: bubbleData,
-      backgroundColor: bubbleData.map(d => d.color + '99'),
-      borderColor: bubbleData.map(d => d.color),
-      borderWidth: 1.5,
+// Bubble — params vs context
+const bubbleModels = MODELS.filter(m=>m.paramsM&&m.contextBp);
+new Chart(document.getElementById('bubbleChart'),{
+  type:'bubble',
+  data:{
+    datasets:[{
+      label:'gLM',
+      data:bubbleModels.map(m=>({
+        x:Math.log10(m.paramsM),
+        y:Math.log10(m.contextBp),
+        r:Math.max(4,Math.min(22,Math.log10(m.paramsM+1)*3.5)),
+        label:m.name, mod:m.mod
+      })),
+      backgroundColor:bubbleModels.map(m=>(MOD_COLOR[m.mod]||'#888')+'99'),
+      borderColor:bubbleModels.map(m=>MOD_COLOR[m.mod]||'#888'),
+      borderWidth:1.5,
     }]
   },
-  options: {
-    responsive: true, maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-      tooltip: { callbacks: {
-        label: ctx => {
-          const d = bubbleData[ctx.dataIndex];
-          const params = Math.pow(10, ctx.parsed.x).toFixed(0);
-          const ctx2 = Math.pow(10, ctx.parsed.y).toFixed(0);
-          return ` ${d.label} — ${Number(params).toLocaleString()}B, ctx:${Number(ctx2).toLocaleString()}`;
-        }
-      }}
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    plugins:{
+      legend:{display:false},
+      tooltip:{callbacks:{label:ctx=>{
+        const d=ctx.raw;
+        const p=Math.pow(10,ctx.parsed.x);
+        const c=Math.pow(10,ctx.parsed.y);
+        return ` ${d.label} — ${p>=1000?(p/1000).toFixed(1)+'B':Math.round(p)+'M'}, ctx:${c>=1000?(c/1000).toFixed(0)+'K':Math.round(c)}bp`;
+      }}}
     },
-    scales: {
-      x: {
-        title: { display: true, text: '파라미터 규모 (log10 B)', color: '#8892b0' },
-        ticks: { callback: v => Math.pow(10,v) >= 1000 ? (Math.pow(10,v)/1000).toFixed(1)+'T B' : Math.round(Math.pow(10,v))+'B' },
-        grid: { color: '#2e3250' }
-      },
-      y: {
-        title: { display: true, text: '컨텍스트 길이 (log10 tokens)', color: '#8892b0' },
-        ticks: { callback: v => Math.pow(10,v) >= 1000 ? (Math.pow(10,v)/1000).toFixed(0)+'K' : Math.round(Math.pow(10,v)) },
-        grid: { color: '#2e3250' }
-      }
+    scales:{
+      x:{title:{display:true,text:'파라미터 규모 (log10 M)',color:'#7a9e8a'},ticks:{callback:v=>Math.pow(10,v)>=1000?(Math.pow(10,v)/1000).toFixed(0)+'B':Math.round(Math.pow(10,v))+'M'},grid:{color:'#1f3329'}},
+      y:{title:{display:true,text:'컨텍스트 길이 (log10 bp)',color:'#7a9e8a'},ticks:{callback:v=>Math.pow(10,v)>=1000?(Math.pow(10,v)/1000).toFixed(0)+'K':Math.round(Math.pow(10,v))+'bp'},grid:{color:'#1f3329'}}
     }
   }
 });
 
-// ─── Use-case cards ───────────────────────────────────────────────────────────
-const ucGrid = document.getElementById('usecaseGrid');
-USECASES.forEach(uc => {
-  const card = document.createElement('div');
-  card.className = 'usecase-card';
-  card.innerHTML = `
-    <div class="uc-icon">${uc.icon}</div>
-    <div class="uc-title">${uc.title}</div>
-    <div class="uc-range">${uc.range}</div>
-    <div class="uc-desc">${uc.desc}</div>
-    <div class="uc-models">${uc.models.map(m => `<span class="uc-model-pill">${m}</span>`).join('')}</div>
+// ─── Context / Param Rank ─────────────────────────────────────────────────────
+const ctxSorted=[...MODELS].sort((a,b)=>b.contextBp-a.contextBp).slice(0,8);
+const pSorted=[...MODELS].sort((a,b)=>b.paramsM-a.paramsM).slice(0,8);
+const ctxEl=document.getElementById('ctxRank');
+ctxSorted.forEach(m=>{
+  const pct=Math.max(2,(m.contextBp/MAX_CTX)*100);
+  ctxEl.innerHTML+=`<div class="compare-item">
+    <span class="ci-name">${m.name}</span>
+    <div class="ci-bar-wrap">
+      <div class="ci-bar" style="width:${pct}px;background:${MOD_COLOR[m.mod]||'#888'}"></div>
+      <span class="ci-val">${m.contextLabel}</span>
+    </div>
+  </div>`;
+});
+const pEl=document.getElementById('paramRank');
+pSorted.forEach(m=>{
+  const pct=Math.max(2,(Math.log10(m.paramsM+1)/Math.log10(MAX_PARAMS+1))*100);
+  pEl.innerHTML+=`<div class="compare-item">
+    <span class="ci-name">${m.name}</span>
+    <div class="ci-bar-wrap">
+      <div class="ci-bar" style="width:${pct}px;background:${MOD_COLOR[m.mod]||'#888'}"></div>
+      <span class="ci-val">${m.paramsLabel}</span>
+    </div>
+  </div>`;
+});
+
+// ─── Architecture cards ───────────────────────────────────────────────────────
+const archGrid=document.getElementById('archGrid');
+ARCHITECTURES.forEach(a=>{
+  const card=document.createElement('div');
+  card.className='arch-card';
+  card.innerHTML=`
+    <div class="arch-icon">${a.icon}</div>
+    <div class="arch-name">${a.name}</div>
+    <div class="arch-models">${a.models}</div>
+    <div class="arch-desc">${a.desc}</div>
+    <div class="arch-pro">${a.pro}</div>
+    <div class="arch-con">${a.con}</div>
   `;
-  ucGrid.appendChild(card);
+  archGrid.appendChild(card);
+});
+
+// ─── Task cards ───────────────────────────────────────────────────────────────
+const taskGrid=document.getElementById('taskGrid');
+TASKS.forEach(t=>{
+  const card=document.createElement('div');
+  card.className='task-card';
+  card.innerHTML=`
+    <div class="tc-icon">${t.icon}</div>
+    <div class="tc-title">${t.title}</div>
+    <div class="tc-models">${t.models.map(m=>`<span class="model-pill">${m}</span>`).join('')}</div>
+    <div class="tc-desc">${t.desc}</div>
+  `;
+  taskGrid.appendChild(card);
 });
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
-const tlEl = document.getElementById('timeline');
-TIMELINE.forEach((item, i) => {
-  const div = document.createElement('div');
-  div.className = 'tl-item';
-  div.innerHTML = `
+const tlEl=document.getElementById('timeline');
+TIMELINE.forEach((item,i)=>{
+  const div=document.createElement('div');
+  div.className='tl-item';
+  div.innerHTML=`
     <div class="tl-dot"></div>
     <div class="tl-date">${item.date}</div>
     <div class="tl-content">
@@ -1164,7 +1063,7 @@ TIMELINE.forEach((item, i) => {
     </div>
   `;
   tlEl.appendChild(div);
-  setTimeout(() => div.classList.add('visible'), 100 + i * 80);
+  setTimeout(()=>div.classList.add('visible'),80+i*60);
 });
 </script>
 </body>
