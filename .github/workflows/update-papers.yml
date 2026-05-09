@@ -1,0 +1,39 @@
+name: Monthly gLM Paper Update
+
+on:
+  schedule:
+    - cron: '0 3 1 * *'   # 매월 1일 03:00 UTC (한국 12:00)
+  workflow_dispatch:        # 수동 실행 가능
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-papers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Fetch papers from arXiv / bioRxiv / PubMed
+        run: python scripts/fetch_papers.py
+
+      - name: Commit & push if papers.json changed
+        run: |
+          git config user.name "Homangla"
+          git config user.email "kimhyeonha0118@gmail.com"
+          git add papers.json
+          if git diff --staged --quiet; then
+            echo "변경 없음 — 커밋 건너뜀"
+          else
+            NEW=$(python3 -c "import json; d=json.load(open('papers.json')); print(d['new_this_run'])")
+            MONTH=$(date +'%Y년 %m월')
+            git commit -m "chore: ${MONTH} gLM 논문 자동 업데이트 (신규 ${NEW}건)"
+            git push
+          fi

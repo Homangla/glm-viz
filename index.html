@@ -240,6 +240,65 @@
 
   footer { text-align: center; padding: 2rem; color: var(--text-dim); font-size: .78rem; border-top: 1px solid var(--border); }
 
+  /* ── 최신 논문 섹션 ── */
+  .papers-meta {
+    display: flex; flex-wrap: wrap; align-items: center; gap: .7rem; margin-bottom: 1.1rem;
+  }
+  .papers-meta .pm-badge {
+    display: inline-flex; align-items: center; gap: .35rem;
+    background: #1a3a28; border: 1px solid var(--accent); border-radius: 20px;
+    padding: .28rem .85rem; font-size: .78rem; color: var(--accent); font-weight: 700;
+  }
+  .papers-meta .pm-info { font-size: .8rem; color: var(--text-muted); }
+  .papers-meta .pm-info span { color: var(--text); font-weight: 600; }
+
+  .paper-tag-filter { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: 1rem; }
+
+  .papers-grid { display: flex; flex-direction: column; gap: .75rem; }
+  .paper-card {
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 12px;
+    padding: 1rem 1.2rem; transition: border-color .2s;
+  }
+  .paper-card:hover { border-color: var(--accent); }
+  .paper-card-header { display: flex; justify-content: space-between; align-items: flex-start; gap: .8rem; flex-wrap: wrap; }
+  .paper-title {
+    font-size: .9rem; font-weight: 700; color: var(--text); line-height: 1.4;
+    text-decoration: none; flex: 1;
+  }
+  .paper-title:hover { color: var(--accent); }
+  .source-badge {
+    display: inline-block; padding: .18rem .55rem; border-radius: 6px;
+    font-size: .7rem; font-weight: 700; white-space: nowrap; flex-shrink: 0;
+  }
+  .src-arxiv   { background: #1a2a3a; color: #64b5f6; border: 1px solid #2a4a6a; }
+  .src-biorxiv { background: #2a1a1a; color: #e06c75; border: 1px solid #5a2a2a; }
+  .src-pubmed  { background: #1a3a28; color: #3ecf8e; border: 1px solid #2a5a3a; }
+  .src-medrxiv { background: #3a2a1a; color: #ffa44f; border: 1px solid #6a4a2a; }
+  .paper-meta-row {
+    display: flex; flex-wrap: wrap; gap: .5rem; align-items: center;
+    margin: .35rem 0 .45rem; font-size: .77rem; color: var(--text-muted);
+  }
+  .paper-authors { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .paper-journal { color: var(--accent2); font-style: italic; }
+  .paper-date { color: var(--text-dim); }
+  .paper-abstract { font-size: .8rem; color: var(--text-muted); line-height: 1.6; margin-bottom: .5rem; }
+  .paper-tags { display: flex; flex-wrap: wrap; gap: .3rem; }
+  .paper-tag {
+    font-size: .69rem; padding: .12rem .45rem; border-radius: 5px;
+    background: var(--surface); border: 1px solid var(--border); color: var(--text-dim);
+    cursor: pointer; transition: all .15s;
+  }
+  .paper-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+  .show-more-btn {
+    margin-top: 1rem; width: 100%; padding: .7rem;
+    background: var(--surface2); border: 1px solid var(--border); border-radius: 10px;
+    color: var(--text-muted); font-size: .85rem; cursor: pointer; transition: all .2s;
+  }
+  .show-more-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .papers-loading { text-align: center; padding: 2rem; color: var(--text-dim); font-size: .85rem; }
+  .papers-empty { text-align: center; padding: 1.5rem; color: var(--text-dim); font-size: .85rem; }
+
   @media (max-width: 600px) {
     header h1 { font-size: 1.5rem; }
     .chart-grid { grid-template-columns: 1fr; }
@@ -269,6 +328,17 @@
       <div class="stat-card"><div class="val">DNA/RNA/단백질</div><div class="label">학습 서열 유형</div></div>
       <div class="stat-card"><div class="val">2020→</div><div class="label">DNA BERT 이후 급성장</div></div>
     </div>
+  </div>
+
+  <!-- 최신 논문 & 업데이트 -->
+  <div class="panel" id="papersPanel">
+    <div class="section-title"><span class="dot" style="background:var(--accent2)"></span>최신 gLM 논문 & 업데이트 <span style="font-size:.75rem;font-weight:400;color:var(--text-dim);margin-left:.4rem;">(매월 1일 자동 업데이트 · arXiv · bioRxiv · PubMed)</span></div>
+    <div class="papers-meta" id="papersMeta">
+      <div class="papers-loading">논문 데이터 로딩 중…</div>
+    </div>
+    <div class="paper-tag-filter" id="paperTagFilter"></div>
+    <div class="papers-grid" id="papersGrid"></div>
+    <button class="show-more-btn" id="showMoreBtn" style="display:none">▼ 더 보기</button>
   </div>
 
   <!-- 모달리티 범례 -->
@@ -1048,6 +1118,119 @@ TASKS.forEach(t=>{
   `;
   taskGrid.appendChild(card);
 });
+
+// ─── 최신 논문 섹션 ───────────────────────────────────────────────────────────
+const PAPERS_PER_PAGE = 8;
+let allPapers = [], activePaperTag = 'all', papersShown = PAPERS_PER_PAGE;
+
+const SRC_CLASS = { arXiv:'src-arxiv', biorxiv:'src-biorxiv', bioRxiv:'src-biorxiv', medrxiv:'src-medrxiv', medRxiv:'src-medrxiv', PubMed:'src-pubmed' };
+
+function renderPapers() {
+  const grid = document.getElementById('papersGrid');
+  const filtered = activePaperTag === 'all'
+    ? allPapers
+    : allPapers.filter(p => (p.tags || []).includes(activePaperTag));
+
+  grid.innerHTML = '';
+  const slice = filtered.slice(0, papersShown);
+
+  if (slice.length === 0) {
+    grid.innerHTML = '<div class="papers-empty">해당 태그의 논문이 없습니다.</div>';
+    document.getElementById('showMoreBtn').style.display = 'none';
+    return;
+  }
+
+  slice.forEach(p => {
+    const srcKey = Object.keys(SRC_CLASS).find(k => (p.source||'').toLowerCase().includes(k.toLowerCase())) || 'PubMed';
+    const srcCls = SRC_CLASS[srcKey] || 'src-pubmed';
+    const authors = (p.authors || []).join(', ') || '저자 미상';
+    const tags = (p.tags || []).map(t =>
+      `<span class="paper-tag" data-tag="${t}">${t}</span>`
+    ).join('');
+    const card = document.createElement('div');
+    card.className = 'paper-card';
+    card.innerHTML = `
+      <div class="paper-card-header">
+        <a class="paper-title" href="${p.url || '#'}" target="_blank" rel="noopener">${p.title}</a>
+        <span class="source-badge ${srcCls}">${p.source}</span>
+      </div>
+      <div class="paper-meta-row">
+        <span class="paper-authors" title="${authors}">${authors}</span>
+        <span class="paper-journal">${p.journal || ''}</span>
+        <span class="paper-date">${p.date || ''}</span>
+      </div>
+      <div class="paper-abstract">${p.abstract || ''}</div>
+      <div class="paper-tags">${tags}</div>
+    `;
+    card.querySelectorAll('.paper-tag').forEach(el => {
+      el.addEventListener('click', () => {
+        activePaperTag = el.dataset.tag;
+        papersShown = PAPERS_PER_PAGE;
+        highlightActiveTag();
+        renderPapers();
+      });
+    });
+    grid.appendChild(card);
+  });
+
+  const btn = document.getElementById('showMoreBtn');
+  btn.style.display = filtered.length > papersShown ? 'block' : 'none';
+  btn.textContent = `▼ 더 보기 (${filtered.length - papersShown}건 남음)`;
+}
+
+function highlightActiveTag() {
+  document.querySelectorAll('#paperTagFilter .chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.tag === activePaperTag);
+  });
+}
+
+function buildTagFilter(papers) {
+  const tagSet = new Set();
+  papers.forEach(p => (p.tags || []).forEach(t => tagSet.add(t)));
+  const filter = document.getElementById('paperTagFilter');
+  filter.innerHTML = '';
+  const allChip = document.createElement('span');
+  allChip.className = 'chip active'; allChip.dataset.tag = 'all'; allChip.textContent = '전체';
+  allChip.addEventListener('click', () => { activePaperTag = 'all'; papersShown = PAPERS_PER_PAGE; highlightActiveTag(); renderPapers(); });
+  filter.appendChild(allChip);
+  [...tagSet].sort().forEach(tag => {
+    const chip = document.createElement('span');
+    chip.className = 'chip'; chip.dataset.tag = tag; chip.textContent = tag;
+    chip.addEventListener('click', () => { activePaperTag = tag; papersShown = PAPERS_PER_PAGE; highlightActiveTag(); renderPapers(); });
+    filter.appendChild(chip);
+  });
+}
+
+document.getElementById('showMoreBtn').addEventListener('click', () => {
+  papersShown += PAPERS_PER_PAGE;
+  renderPapers();
+});
+
+fetch('./papers.json')
+  .then(r => r.json())
+  .then(data => {
+    allPapers = data.papers || [];
+    const meta = document.getElementById('papersMeta');
+    const upd = data.last_updated || '-';
+    const newCount = data.new_this_run ?? allPapers.length;
+    const total = data.total ?? allPapers.length;
+    const period = data.period_start && data.period_end
+      ? `${data.period_start} ~ ${data.period_end}`
+      : '최근 31일';
+    meta.innerHTML = `
+      <div class="pm-badge">🔄 자동 업데이트</div>
+      <span class="pm-info">최종 갱신: <span>${upd}</span></span>
+      <span class="pm-info">수집 기간: <span>${period}</span></span>
+      <span class="pm-info">신규: <span>${newCount}건</span></span>
+      <span class="pm-info">누적: <span>${total}건</span></span>
+    `;
+    buildTagFilter(allPapers);
+    renderPapers();
+  })
+  .catch(() => {
+    document.getElementById('papersMeta').innerHTML =
+      '<div class="papers-empty">📭 논문 데이터를 불러올 수 없습니다. GitHub Actions가 아직 실행 전일 수 있습니다.</div>';
+  });
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
 const tlEl=document.getElementById('timeline');

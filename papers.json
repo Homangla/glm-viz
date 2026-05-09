@@ -1,0 +1,121 @@
+{
+  "last_updated": "2026-05-09",
+  "period_start": "2026-04-08",
+  "period_end": "2026-05-09",
+  "new_this_run": 6,
+  "total": 6,
+  "papers": [
+    {
+      "title": "Wisteria: A Unified Multi-Scale Feature Learning Framework for DNA Language Model",
+      "authors": [
+        "Weihua Wang",
+        "Haoji Li",
+        "Feilong Bao",
+        "Lei Yang",
+        "Guanglai Gao"
+      ],
+      "abstract": "DNA language model aims to decipher the regulatory grammar and semantic of genomes by capturing long range dependencies in DNA sequences. Existing methods emphasize long range token interactions but often ignore the interplay between local motifs and global dependencies. In this paper, we propose Wisteria, a genomic language model that integrates multi scale feature learning within a unified framework for DNA sequence. Specifically, Wisteria augm…",
+      "date": "2026-05-07",
+      "source": "arXiv",
+      "journal": "arXiv (cs.AI)",
+      "url": "http://arxiv.org/abs/2605.05913v1",
+      "tags": [
+        "DNA",
+        "SSM"
+      ]
+    },
+    {
+      "title": "Genomic language model-based genomic prediction in plant breeding.",
+      "authors": [
+        "Alagarasan Ganesan",
+        "Li Huihui",
+        "Xu Yunbi",
+        "Crossa José",
+        "Varshney Rajeev K"
+      ],
+      "abstract": "Genomic prediction based on molecular markers has substantially advanced genomic selection; however, prediction accuracy often plateaus despite continued increases in marker density and methodological refinement. This saturation limits the effective use of available genomic information. The emergence of genomic language models (GLMs) offers a new framework for incorporating richer sequence-based information into genomic prediction, potentially ca…",
+      "date": "2026-05-01",
+      "source": "PubMed",
+      "journal": "Trends in plant science",
+      "url": "https://doi.org/10.1016/j.tplants.2026.04.012",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Evaluating Post-hoc Explanations of the Transformer-based Genome Language Model DNABERT-2",
+      "authors": [
+        "Isabel Kurth",
+        "Paulo Yanez Sarmiento",
+        "Bernhard Y. Renard"
+      ],
+      "abstract": "Explaining deep neural network predictions on genome sequences enables biological insight and hypothesis generation-often of greater interest than predictive performance alone. While explanations of convolutional neural networks (CNNs) have been shown to capture relevant patterns in genome sequences, it is unclear whether this transfers to more expressive Transformer-based genome language models (gLMs). To answer this question, we adapt AttnLRP, …",
+      "date": "2026-04-23",
+      "source": "arXiv",
+      "journal": "arXiv (cs.LG)",
+      "url": "http://arxiv.org/abs/2604.21690v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "In Search of Lost DNA Sequence Pretraining",
+      "authors": [
+        "Zhijiang Tang",
+        "Jiaxin Qi",
+        "Yan Cui",
+        "Jinli Ou",
+        "Yuhua Zheng",
+        "Jianqiang Huang"
+      ],
+      "abstract": "DNA sequence encoding is fundamental to gene function prediction, protein synthesis, and diverse downstream biological tasks. Despite the substantial progress achieved by large-scale DNA sequence pretraining, existing studies have overwhelmingly emphasized pretraining scale and custom downstream evaluation datasets, while neglecting some essential components of the pretraining paradigm. In this paper, we reveal three critical yet heretofore overl…",
+      "date": "2026-04-17",
+      "source": "arXiv",
+      "journal": "arXiv (cs.LG, cs.AI)",
+      "url": "http://arxiv.org/abs/2604.16570v1",
+      "tags": [
+        "DNA",
+        "단백질"
+      ]
+    },
+    {
+      "title": "EvoLen: Evolution-Guided Tokenization for DNA Language Model",
+      "authors": [
+        "Nan Huang",
+        "Xiaoxiao Zhou",
+        "Junxia Cui",
+        "Mario Tapia-Pacheco",
+        "Tiffany Amariuta",
+        "Yang Li"
+      ],
+      "abstract": "Tokens serve as the basic units of representation in DNA language models (DNALMs), yet their design remains underexplored. Unlike natural language, DNA lacks inherent token boundaries or predefined compositional rules, making tokenization a fundamental modeling decision rather than a naturally specified one. While existing approaches like byte-pair encoding (BPE) excel at capturing token structures that reflect human-generated linguistic regulari…",
+      "date": "2026-04-09",
+      "source": "arXiv",
+      "journal": "arXiv (cs.LG, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2604.08698v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "ncProFormer: A CNN-enhanced Transformer for ncRNA Coding-Potential Prediction.",
+      "authors": [
+        "Tong Mengyu",
+        "Chen Yuanting",
+        "Chen Long",
+        "Xu Jingnan",
+        "Yang Yingjie",
+        "Liu Guixia"
+      ],
+      "abstract": "Recent studies have revealed that some noncoding RNAs (ncRNAs) bear translational potential, and their encoded micropeptides have essential functions in multiple biological processes. However, accurate identification of coding-capable ncRNAs remains challenging due to weak translation signals, low conservation, and heterogeneous data distributions. Herein, we propose ncProFormer, a deep learning framework tailored for ncRNA coding-potential predi…",
+      "date": "2026-04-01",
+      "source": "PubMed",
+      "journal": "Journal of chemical information and modeling",
+      "url": "https://doi.org/10.1021/acs.jcim.6c00056",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    }
+  ]
+}
