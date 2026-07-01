@@ -1,10 +1,229 @@
 {
-  "last_updated": "2026-05-09",
-  "period_start": "2026-04-08",
-  "period_end": "2026-05-09",
-  "new_this_run": 6,
-  "total": 6,
+  "last_updated": "2026-07-01",
+  "period_start": "2026-05-31",
+  "period_end": "2026-07-01",
+  "new_this_run": 12,
+  "total": 18,
   "papers": [
+    {
+      "title": "DNA Language Models: An Assessment of Pre-Training for Fine-Tuning Tasks",
+      "authors": [
+        "Romain Karpinsky",
+        "Julien Mozziconacci",
+        "Mickaël Delcey"
+      ],
+      "abstract": "Recent breakthroughs in foundation models and Large Language Models (LLMs) have introduced new opportunities for studying and decoding genomic sequences. Several state-of-the-art approaches, such as DNABERT2, rely on transformer-based architectures, while others, such as ConvNova, still build upon more conventional convolutional models. However, systematic benchmark comparisons across these methods remain scarce. Given that transformer-based mode…",
+      "date": "2026-06-29",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN, cs.CL)",
+      "url": "http://arxiv.org/abs/2606.30140v1",
+      "tags": [
+        "DNA",
+        "SSM"
+      ]
+    },
+    {
+      "title": "The Dark Regulome: Disentangling Predictability from Regulation in Genomic Foundation Models",
+      "authors": [
+        "Chahat Baranwal",
+        "Aaditya Baranwal",
+        "Lakshya Nitin Tandon"
+      ],
+      "abstract": "High-grade gliomas integrate into neural circuits through functional synapses with neurons, raising the question of which noncoding elements shape synaptogenic gene expression in tumor cells. The regulatory program written across the dark genome, what we call the $\\textit{dark regulome}$, is the natural substrate to probe, and sequence foundation models offer a zero-shot route through in-silico mutagenesis (ISM); yet likelihood-based scoring is t…",
+      "date": "2026-06-05",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CL, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2606.06834v2",
+      "tags": [
+        "DNA",
+        "단백질",
+        "변이 효과",
+        "유전자 발현",
+        "SSM"
+      ]
+    },
+    {
+      "title": "LDARNet: DNA Adaptive Representation Network with Learnable Tokenization for Genomic Modeling",
+      "authors": [
+        "Daria Ledneva",
+        "Denis Kuznetsov"
+      ],
+      "abstract": "Genomic foundation models increasingly adopt large language model architectures, yet almost universally rely on fixed tokenization schemes such as $k$-mers, BPE, or single nucleotides, which impose arbitrary sequence boundaries that may obscure biologically relevant structure. We present LDARNet, a 120M-parameter hierarchical genomic foundation model that adapts H-Net-style dynamic chunking from autoregressive generation to masked language modeli…",
+      "date": "2026-06-03",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CL, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2606.04552v1",
+      "tags": [
+        "DNA",
+        "RNA",
+        "스플라이싱",
+        "유전자 발현",
+        "에피게놈"
+      ]
+    },
+    {
+      "title": "GENEB: Why Genomic Models Are Hard to Compare",
+      "authors": [
+        "Daria Ledneva",
+        "Mikhail Nuridinov",
+        "Denis Kuznetsov"
+      ],
+      "abstract": "Progress in genomic foundation models is difficult to assess due to fragmented benchmarks, incompatible evaluation protocols, and task-specific reporting. As a result, claims of superiority or generality across models are often not directly comparable. We introduce GENEB, a large-scale diagnostic benchmark that evaluates frozen representations from 40 genomic foundation models across 100 tasks spanning 13 functional categories under a unified pro…",
+      "date": "2026-06-03",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CL, cs.LG, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2606.04525v3",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Sequence determinant and functional relevance of 8-oxoguanine RNA modification unveiled from foundation-model-based predictor.",
+      "authors": [
+        "Xia Rong",
+        "Zhang Jiahao",
+        "Wang Xuan",
+        "Ma Jiongming",
+        "Li Jiayi",
+        "Su Jionglong"
+      ],
+      "abstract": "8-Oxoguanine (o8G) is an oxidative RNA modification that plays critical roles in cellular processes including stress responses and RNA integrity regulation. Notably, emerging evidence has implicated o8G modifications in cancer progression and development. However, research progress is limited by the lack of efficient high-throughput detection methods and computational tools for analyzing sequence distribution and regulatory mechanisms. Here, we p…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Molecular therapy. Nucleic acids",
+      "url": "https://doi.org/10.1016/j.omtn.2026.102951",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "CodonMoE: DNA language models for codon-dependent mRNA prediction.",
+      "authors": [
+        "Du Shiyi",
+        "Liang Litian",
+        "Li Jiayi",
+        "Kingsford Carl"
+      ],
+      "abstract": "MOTIVATION: Genomic language models (gLMs) face a fundamental efficiency challenge: one must either maintain separate specialized models for each biological modality (DNA and RNA) or develop large multimodal architectures. Both approaches impose significant computational burdens-modality-specific models require redundant infrastructure despite inherent biological connections, while multi-modal architectures demand increased parameter counts and e…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag285",
+      "tags": [
+        "DNA",
+        "RNA",
+        "SSM"
+      ]
+    },
+    {
+      "title": "GSR-ST: A generalized spatial-temporal framework for genomic signals and regions prediction using multi-scale feature fusion.",
+      "authors": [
+        "Zhuang Jujuan",
+        "Lu Ya"
+      ],
+      "abstract": "Genomic DNA sequences contain diverse functional genomic signals and regions (GSRs) that are crucial for regulating gene expression. The precise identification of these GSRs is fundamental to elucidating genomic architecture and understanding regulatory mechanisms. However, due to the data complexity and heterogeneity, current computational methods remain limited in their predictive accuracy. In this work, we propose a generalized spatial-tempora…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Computational biology and chemistry",
+      "url": "https://doi.org/10.1016/j.compbiolchem.2026.108909",
+      "tags": [
+        "DNA",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "Interpreting embeddings from genome and protein language models.",
+      "authors": [
+        "May Luke E",
+        "White Jacob B",
+        "Roell Garrett W"
+      ],
+      "abstract": "Following advances in the field of natural language processing related to the transformer and the attention mechanism, many large language models have been trained using DNA and protein databases. While these models are designed for next-token prediction with the goal of generating novel sequences, researchers have found that the intermediate representations, or embeddings, of the DNA and amino acid sequences as they pass through these models can…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Biotechnology advances",
+      "url": "https://doi.org/10.1016/j.biotechadv.2026.108945",
+      "tags": [
+        "DNA",
+        "단백질",
+        "스플라이싱",
+        "변이 효과",
+        "CRISPR"
+      ]
+    },
+    {
+      "title": "Graphylo Var: Predicting the impact of non-coding variants using a multi-species sequence model.",
+      "authors": [
+        "Lim Dongjoon",
+        "Blanchette Mathieu"
+      ],
+      "abstract": "MOTIVATION: Understanding the functional impact of genetic variants is a key problem for precision medicine. Tools like CADD, PhyloP, and PhastCons are useful, but they often look at each position in the genome in isolation. This means they can miss important information from the evolutionary history that connects different species. In this paper, we extend our previous model, Graphylo, to predict the effects of variants. Our new model, GraphyloV…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag426",
+      "tags": [
+        "DNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "Benchmarking reveals the superiority of nucleic acid foundation models in predicting lncRNA coding potential.",
+      "authors": [
+        "Yang Yu",
+        "Ren Liping",
+        "Feng Juan",
+        "Zhang Yang",
+        "Liu Tianyuan"
+      ],
+      "abstract": "BACKGROUND: A subset of long noncoding RNAs (lncRNAs) contains short open reading frames and can encode functional micropeptides. However, identifying these coding lncRNAs (codlncRNAs) remains challenging due to weak coding signals, short peptide products, and heterogeneous evidence across databases. Existing computational tools lack unified benchmarks, and the utility of nucleic acid foundation models for this task remains unclear. RESULTS: We c…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "Genome biology",
+      "url": "https://doi.org/10.1186/s13059-026-04134-7",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "Evaluating DNA Function Understanding in Genomic Language Models Using Evolutionarily Implausible Sequences.",
+      "authors": [
+        "Jiang Shiyu",
+        "Liu Xuyin",
+        "Wang Zitong Jerry"
+      ],
+      "abstract": "Genomic language models (gLMs) hold promise for generating novel, functional DNA sequences for synthetic biology. A critical challenge is determining whether gLMs understand sequence function or merely memorize training patterns derived from natural genomes. We introduce Nullsettes, an evaluation framework that measures how well models predict in silico loss-of-function (LOF) mutations in synthetic expression cassettes lacking evolutionary preced…",
+      "date": "2026-06-01",
+      "source": "PubMed",
+      "journal": "ACS synthetic biology",
+      "url": "https://doi.org/10.1021/acssynbio.6c00024",
+      "tags": [
+        "DNA",
+        "변이 효과",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "Listeria Genome Identification Using DNABERT Embedding With LightGBM and SHAP-Based Explainable Classification.",
+      "authors": [
+        "Arumugam Sajeev Ram",
+        "P Ananth J",
+        "Karuppasamy Sankar Ganesh",
+        "Murugan V Senthil",
+        "Mbasso Wulfran Fendzi",
+        "Harrison Ambe"
+      ],
+      "abstract": "Prompt and accurate identification of Listeria monocytogenes at the whole-genome level is essential for food safety surveillance and outbreak prevention, yet existing culture-based, PCR, and next-generation sequencing (NGS) workflows are either slow, labor-intensive, or rely on opaque machine learning models with limited interpretability. This study proposes an explainable genomic classification framework that couples transformer-based DNA embedd…",
+      "date": "2026-01-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics and biology insights",
+      "url": "https://doi.org/10.1177/11779322261457840",
+      "tags": [
+        "DNA"
+      ]
+    },
     {
       "title": "Wisteria: A Unified Multi-Scale Feature Learning Framework for DNA Language Model",
       "authors": [
