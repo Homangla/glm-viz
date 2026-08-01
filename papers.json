@@ -1,10 +1,306 @@
 {
-  "last_updated": "2026-07-01",
-  "period_start": "2026-05-31",
-  "period_end": "2026-07-01",
-  "new_this_run": 12,
-  "total": 18,
+  "last_updated": "2026-08-01",
+  "period_start": "2026-07-01",
+  "period_end": "2026-08-01",
+  "new_this_run": 16,
+  "total": 34,
   "papers": [
+    {
+      "title": "VESTIGE: A Knowledge-Guided Masking Strategy for Corruption-Aware Fine-Tuning of Genomic Transformers, Validated on Ancient DNA Reconstruction",
+      "authors": [
+        "Angshuman Chakravertty",
+        "Rahul Maheshwari"
+      ],
+      "abstract": "Standard masked-language-model fine-tuning applies a uniform masking probability across every token position, assuming reconstruction difficulty is position-agnostic. When the degradation process is characterised and concentrated at predictable positions, this assumption fails: at peak damage sites the model can underperform a frequency-matched random predictor. We introduce VESTIGE, a parameter-free, drop-in replacement for the standard MLM coll…",
+      "date": "2026-07-30",
+      "source": "arXiv",
+      "journal": "arXiv (cs.LG)",
+      "url": "http://arxiv.org/abs/2607.27712v1",
+      "tags": [
+        "DNA",
+        "구조 예측"
+      ]
+    },
+    {
+      "title": "Foundation-model-guided radiogenomic discovery linking cancer genomes to cancer scans",
+      "authors": [
+        "Frederik Hauke",
+        "Jeremias Krause",
+        "Patrick Wienholt",
+        "Christiane Kuhl",
+        "Ingo Kurth",
+        "Sikander Hayat"
+      ],
+      "abstract": "The function of many genes is still unknown, and conventional driver-discovery methods, which rely on how frequently a gene is mutated, cannot assess genes that are only rarely affected. Here we pair Evo~2-based genome analysis with routine clinical imaging to identify gene--phenotype associations at genome-wide scale. For every somatic mutation across three TCGA cohorts (cRCC=clear cell renal cell carcinoma, HCC=hepatocellular carcinoma, and BC=…",
+      "date": "2026-07-22",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN, cs.AI)",
+      "url": "http://arxiv.org/abs/2607.20583v1",
+      "tags": [
+        "DNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "Causal dictionary learning reveals and validates transcription-factor binding features in genomic language models",
+      "authors": [
+        "Sarwan Ali"
+      ],
+      "abstract": "Genomic language models achieve strong performance across regulatory-genomics tasks, yet what these models internally represent remains opaque, and the field lacks a principled procedure for verifying that an apparent ``concept'' inside a model is real rather than an artifact of sequence composition. We introduce a framework that combines sparse dictionary learning with causal intervention to extract, validate, and causally test interpretable fea…",
+      "date": "2026-07-21",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN, cs.AI, cs.LG)",
+      "url": "http://arxiv.org/abs/2607.19618v1",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "Screening of Biosecurity Features in Metagenomic Data with Evo 2 Probes",
+      "authors": [
+        "Jeremy Guntoro",
+        "Alexander Dack",
+        "Dylan Danno",
+        "Michaela Jančovičová",
+        "Križan Jurinović",
+        "Vanessa Smilansky"
+      ],
+      "abstract": "Genomic foundation models such as Evo 2 learn rich sequence representations, but their value for biosecurity screening is largely unexplored. We ask how much biosecurity-relevant signal is linearly accessible in these representations by training minimal linear and attention probes on frozen Evo 2 layer-26 activations, without fine-tuning the underlying model. Across held-out metagenomic test sets, the probes detect antimicrobial resistance (AMR) …",
+      "date": "2026-07-15",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN, cs.LG)",
+      "url": "http://arxiv.org/abs/2607.14070v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Geometric Causal Models",
+      "authors": [
+        "Eli N. Weinstein",
+        "David M. Blei"
+      ],
+      "abstract": "Scientists often seek to draw causal inferences from structured data that is not independently and identically distributed, such as spatial data, network data, or molecular data. We develop geometric causal models (GCMs), a framework for causal inference from dependent data that exploits underlying symmetries of the data generating process. For example, in spatial data, we consider processes that are symmetric under translations, or in graph data…",
+      "date": "2026-07-06",
+      "source": "arXiv",
+      "journal": "arXiv (stat.ML, cs.LG, q-bio.BM)",
+      "url": "http://arxiv.org/abs/2607.05153v2",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "SpliSync: Genomic language model-driven splice site correction of long RNA sequencing reads.",
+      "authors": [
+        "Lui Wui Wang",
+        "Florea Liliana"
+      ],
+      "abstract": "Long RNA sequencing reads are rapidly replacing short reads in transcriptomic analyses, enabling full-length transcript sequencing and better identification of isoforms, alternative splicing events, and other transcript variants. However, their higher sequencing error rates can cause misalignments, especially at splice junctions, reducing the accuracy of transcript reconstruction and analysis. We developed SpliSync, a genomic language model-drive…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "bioRxiv : the preprint server for biology",
+      "url": "https://doi.org/10.64898/2026.07.04.736518",
+      "tags": [
+        "DNA",
+        "RNA",
+        "스플라이싱",
+        "변이 효과",
+        "SSM"
+      ]
+    },
+    {
+      "title": "ATACompass enables cross-species cell identity mapping for scATAC-seq without gene annotations.",
+      "authors": [
+        "Jiang Jie",
+        "Ding Yali",
+        "Jin Bu",
+        "Liu Guole",
+        "Wang Siqi",
+        "Zhang Ying"
+      ],
+      "abstract": "Single-cell assay for transposase-accessible chromatin with sequencing (scATAC-seq) provides insights into transcriptional regulation, but there remain challenges in cell identity annotation due to data sparsity and limited gene regulatory annotations, particularly in non-model organisms. To address these limitations, we present ATACompass, a sequence-based framework for cell annotation that directly encodes chromatin accessibility peak sequences…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Cell reports methods",
+      "url": "https://doi.org/10.1016/j.crmeth.2026.101460",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과",
+        "에피게놈",
+        "SSM"
+      ]
+    },
+    {
+      "title": "DeepExoMir: A Reproducible RNA Language Model Framework for CLIP-Seq-Supported MicroRNA Target-Site Prioritization.",
+      "authors": [
+        "Lin Wen-Hsien",
+        "Hsiung Chia-Ni",
+        "Lien Wen-Yu",
+        "Sieber Martin"
+      ],
+      "abstract": "MicroRNAs regulate gene expression post-transcriptionally, yet target prediction faces a credibility gap: published methods drop sharply against CLIP-seq-validated negatives. We present DeepExoMir, a deep learning framework integrating frozen RiNALMo RNA language model embeddings with biologically informed features. Under a dual-probe ablation protocol on three miRBench test sets, DeepExoMir reaches mean AU-PRC 0.855, surpassing eight retrained b…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "International journal of molecular sciences",
+      "url": "https://doi.org/10.3390/ijms27146184",
+      "tags": [
+        "RNA",
+        "변이 효과",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "Is a Win-Win possible? Achieving pareto-optimal privacy-utility balance in fine-tuned genome language model embeddings against embedding reconstruction attacks.",
+      "authors": [
+        "Al-Saidi Reem",
+        "Ayday Erman",
+        "Kobti Ziad",
+        "AlSeidi Rola"
+      ],
+      "abstract": "MOTIVATION: Genomic data is among the most sensitive categories of personal information, and the growing adoption of language models for sequence analysis raises significant privacy concerns. Prior work demonstrated that embeddings from general-purpose language models adapted for genomic sequences leak substantial single-nucleotide information under reconstruction attacks, and that fine-tuning embeddings can reduce this vulnerability at certain p…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag311",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Decoding promoter activity from DNA sequence using pre-trained language models.",
+      "authors": [
+        "Jung Christophe"
+      ],
+      "abstract": "Promoter architecture plays a central role in transcriptional regulation, but predicting promoter activity directly from DNA sequence remains challenging. Here, we tested whether transformer-based DNA language models can learn regulatory logic encoded in Drosophila core promoters. We fine-tuned the pretrained DNA language model DNABERT-2 using a synthetic core promoter dataset measured in S2 cells with luciferase reporter assays. The model predic…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Scientific reports",
+      "url": "https://doi.org/10.1038/s41598-026-61483-w",
+      "tags": [
+        "DNA",
+        "RNA",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "Systematic contextual biases in SegmentNT potentially relevant to other nucleotide transformer models.",
+      "authors": [
+        "Ebbert Mark T W",
+        "Ho Anna",
+        "Page Madeline L",
+        "Dutch Bram",
+        "Byer Blake K",
+        "Hankins Kristen L"
+      ],
+      "abstract": "Recent advances in large language models have extended to genomic applications, yet model robustness relative to context is unclear. Here, we demonstrate two intrinsic biases (input sequence length and nucleotide position) affecting SegmentNT results, a model included with the Nucleotide Transformer that provides nucleotide-level predictions of biological features. We demonstrate that nucleotide position within the input sequence (beginning, midd…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Nucleic acids research",
+      "url": "https://doi.org/10.1093/nar/gkag704",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "An overview of self-supervised deep learning applications to molecular data.",
+      "authors": [
+        "Borràs Ferrís Lluis",
+        "Fratti Riccardo",
+        "Nucera Valerio",
+        "Oreiller Valentin",
+        "Di Camillo Barbara",
+        "Atzori Manfredo"
+      ],
+      "abstract": "The emergence of high-throughput sequencing technologies has generated unprecedented amounts of molecular data, posing significant challenges for analysis and interpretation. In the past 15 years, deep learning (DL) has revolutionized many data analysis fields. However, a key limitation of most DL approaches is their reliance on massive amounts of data that often require labeling. Self-supervised learning (SSL) uses large-scale unlabeled data to …",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Briefings in bioinformatics",
+      "url": "https://doi.org/10.1093/bib/bbag380",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Construction and validation of a phenotypic prediction model for bacterial gentamicin resistance using deep learning with gene sequences.",
+      "authors": [
+        "Li Jun",
+        "Xue Siyan",
+        "Hou Lingxuan",
+        "Zhang Zhixuan",
+        "Yuan Kaixuan",
+        "Chen Xiaozhong"
+      ],
+      "abstract": "The emergence of bacterial resistance to antibiotics poses a significant threat to human health; thus, there is an urgent need for new strategies in understanding the mechanisms of resistance and further fast prediction of it. Deep learning models offer promising solutions through analyzing genetic sequences in the prediction of bacterial resistance patterns. This study develops and validates a transformer-based deep learning model, DNABERT-2-117…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Microbiology spectrum",
+      "url": "https://doi.org/10.1128/spectrum.01906-25",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "Interpretable prediction of DNA replication origins in S. cerevisiae using DNABERT and DNABERT-2.",
+      "authors": [
+        "Piroozeh Zohreh",
+        "Akerman Ildem",
+        "Kalinina Olga V",
+        "Kesselheim Stefan",
+        "Bazarova Alina"
+      ],
+      "abstract": "BACKGROUND: DNA replication is a biological process in which a single DNA molecule is duplicated, initiating from multiple genomic sites known as replication origins. Identifying replication origins and analyzing their underlying base sequence composition is crucial for understanding the mechanisms of DNA replication. Although there are various machine learning and deep learning approaches for origin prediction, many rely on labor intensive featu…",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "BMC bioinformatics",
+      "url": "https://doi.org/10.1186/s12859-026-06562-5",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "GenART: Reading the genome's language with adaptive \"words\".",
+      "authors": [
+        "Chen Kehan",
+        "Han Ping",
+        "Lin Zhe",
+        "Gao Shang",
+        "Yang Xinyu",
+        "Zeng Xiangxiang"
+      ],
+      "abstract": "Tokenization is both a prerequisite and a central challenge for genomic language models, due to the inherent difficulty of delineating meaningful segments within continuous DNA sequences. We present GenART, a genomic language model framework that dynamically segments DNA into variable-length words directly from raw sequences without manual annotation. Its key adaptive tokenization module infers biologically meaningful boundaries from multi-scale …",
+      "date": "2026-07-01",
+      "source": "PubMed",
+      "journal": "Cell reports methods",
+      "url": "https://doi.org/10.1016/j.crmeth.2026.101516",
+      "tags": [
+        "DNA",
+        "에피게놈"
+      ]
+    },
+    {
+      "title": "Prediction of DNA N4-Methylcytosine Sites Based on a Position-Aligned Multi-branch Fusion Network.",
+      "authors": [
+        "Wang Hangyi",
+        "Li Jian",
+        "Ruan Yaoping",
+        "Feng Hailin"
+      ],
+      "abstract": "While DNA N4-methylcytosine (4mC) plays regulatory roles in various organisms, its endogenous presence in mammalian genomes remains debated. Accurate identification of putative 4mC sites in eukaryotic genomes is impeded by scarce validated data and complex sequence dependencies. Although the mouse is a vital mammalian model for epigenetic studies, computational predictors capable of reliably screening murine 4mC candidate sites remain lacking. To…",
+      "date": "2026-01-01",
+      "source": "PubMed",
+      "journal": "Computational and structural biotechnology journal",
+      "url": "https://doi.org/10.34133/csbj.0147",
+      "tags": [
+        "DNA"
+      ]
+    },
     {
       "title": "DNA Language Models: An Assessment of Pre-Training for Fine-Tuning Tasks",
       "authors": [
