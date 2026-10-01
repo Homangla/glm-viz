@@ -1,10 +1,578 @@
 {
-  "last_updated": "2026-08-01",
-  "period_start": "2026-07-01",
-  "period_end": "2026-08-01",
-  "new_this_run": 16,
-  "total": 34,
+  "last_updated": "2026-10-01",
+  "period_start": "2026-08-31",
+  "period_end": "2026-10-01",
+  "new_this_run": 31,
+  "total": 62,
   "papers": [
+    {
+      "title": "Interpreting embeddings from genome and protein language models.",
+      "authors": [
+        "May Luke E",
+        "White Jacob B",
+        "Roell Garrett W"
+      ],
+      "abstract": "Following advances in the field of natural language processing related to the transformer and the attention mechanism, many large language models have been trained using DNA and protein databases. While these models are designed for next-token prediction with the goal of generating novel sequences, researchers have found that the intermediate representations, or embeddings, of the DNA and amino acid sequences as they pass through these models can…",
+      "date": "2026-10-01",
+      "source": "PubMed",
+      "journal": "Biotechnology advances",
+      "url": "https://doi.org/10.1016/j.biotechadv.2026.108945",
+      "tags": [
+        "DNA",
+        "단백질",
+        "스플라이싱",
+        "변이 효과",
+        "CRISPR"
+      ]
+    },
+    {
+      "title": "Role of Artificial Intelligence in bioinformatics: Revolutionizing molecular docking and DNA tokenization.",
+      "authors": [
+        "Chaudhary Swati",
+        "Singh Sobinder",
+        "Gupta Rashmi",
+        "Dhull Sachin"
+      ],
+      "abstract": "Bioinformatics has become a crucial discipline that connects biology and computational analysis, extracting meaningful insights from complex biological datasets. Traditional bioinformatics approaches, which rely on statistical models and manual analysis, are often inadequate for handling such complexity. The integration of artificial intelligence (AI) and machine learning (ML) has revolutionized bioinformatics by providing powerful computational …",
+      "date": "2026-10-01",
+      "source": "PubMed",
+      "journal": "Computational biology and chemistry",
+      "url": "https://doi.org/10.1016/j.compbiolchem.2026.109217",
+      "tags": [
+        "DNA",
+        "단백질",
+        "유전자 발현",
+        "구조 예측"
+      ]
+    },
+    {
+      "title": "CipherGenome: Homomorphic Inference for Genomic Mixture-of-Experts",
+      "authors": [
+        "Guang Yang",
+        "Fengchen Liu"
+      ],
+      "abstract": "Genome foundation models are growing into sparse mixture-of-experts (MoE) networks whose expert weights no longer fit on the machines that hold the sequences, yet sending a private genome to rented accelerators exposes it: we show that a single server hosting one expert recovers the input nucleotides with 99.8% top-1 accuracy. We present CipherGenome, a protocol that keeps the embedding, attention and router of a 15.1B-parameter MoE genome model …",
+      "date": "2026-09-27",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CR, cs.LG, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2609.35883v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "GenomeOcean Anywhere: Private WebGPU Inference for Genome MoEs",
+      "authors": [
+        "Guang Yang",
+        "Fengchen Liu"
+      ],
+      "abstract": "Genome foundation models are most useful where sequences are generated, yet the largest models need datacenter accelerators and a place to send private DNA. We ask whether a 15-billion-parameter genome mixture-of-experts (MoE) model can instead run on volunteers' web browsers, with the experts spread across many untrusted devices, without changing its predictions and without revealing the sequence to any single device. We build a system in which …",
+      "date": "2026-09-27",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CR, cs.LG, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2609.35882v1",
+      "tags": [
+        "DNA",
+        "에피게놈"
+      ]
+    },
+    {
+      "title": "GenoTrace: Inheritable Watermarks for Genome Foundation Model Distillation",
+      "authors": [
+        "Guang Yang",
+        "Fengchen Liu"
+      ],
+      "abstract": "Can a genome model retain a detectable record of the synthetic sequences used to train it? We study watermark inheritance through distillation with GenoTrace, a codon-aware extension of green-list watermarking. Two token-level factors modulate the teacher's generation bias using codon position and organism-specific codon usage. The resulting sequences train a smaller student, whose outputs are audited without an active watermark processor. In a t…",
+      "date": "2026-09-27",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CR, cs.LG, q-bio.GN)",
+      "url": "http://arxiv.org/abs/2609.35881v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Motif-Vocab: StatisticallyCalibrated Transcription-Factor-Identity Tokenization forGenomic Language Models",
+      "authors": [
+        "Liangyu Li",
+        "Michael White"
+      ],
+      "abstract": "Tokenization is a central design choice in genomic language models, yet most deoxyribonucleic acid (DNA) tokenizers use characters, fixed-length k-mers, or frequency-derived subwords without explicitly using prior information about the specificity of DNA-binding regulatory factors. We introduce Motif-Vocab, a biologically informed tokenizer that scans both DNA strands for statistically calibrated motif matches, emits transcription-factor (TF) ide…",
+      "date": "2026-09-23",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN)",
+      "url": "http://arxiv.org/abs/2609.28386v1",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "HyCoSeq: Contextual Hyperbolic Representation Learning for Genomic Sequences",
+      "authors": [
+        "Chenhao Zeng",
+        "Zhibin Pu",
+        "Shufei Ge"
+      ],
+      "abstract": "Hyperbolic geometry provides a natural inductive bias for genomic representation learning, but existing hyperbolic genomic models primarily use Lorentz convolutions to learn local sequence representations, while their residual pathways do not directly aggregate full Lorentz representations. We propose HyCoSeq, a contextual hyperbolic representation learning framework for genomic sequences. HyCoSeq incorporates weighted Lorentzian residual aggrega…",
+      "date": "2026-09-15",
+      "source": "arXiv",
+      "journal": "arXiv (cs.LG, q-bio.GN, stat.ML)",
+      "url": "http://arxiv.org/abs/2609.16925v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Feasibility of Homomorphic Inference for a Genomic Foundation Model",
+      "authors": [
+        "Christos Galanopoulos",
+        "Kimon Antonios Provatas",
+        "Ilias Georgakopoulos-Soares"
+      ],
+      "abstract": "Human genomic sequences can identify individuals, cannot be replaced after disclosure, and are the inputs that genomic foundation models are designed to interpret. We assess whether a compute provider can execute a released genomic foundation model without receiving query-derived genomic values in plaintext and whether correctness, memory, or cost prevents complete encrypted inference. We first reproduce the released model on three genomic task f…",
+      "date": "2026-09-14",
+      "source": "arXiv",
+      "journal": "arXiv (cs.CR)",
+      "url": "http://arxiv.org/abs/2609.16211v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Structure is not mechanism: high-gain gated-FFN rows across text and genomic foundation models",
+      "authors": [
+        "Alexandros Tzanakakis",
+        "Aris Karatzikos",
+        "Ilias Georgakopoulos-Soares"
+      ],
+      "abstract": "A small number of unusually high-gain parameters can exert disproportionate effects in transformer language models, but whether analogous structures recur in genomic foundation models and whether structural geometry determines functional importance remains unknown. We analyzed high-gain rows in gated feed-forward networks across text and genomic foundation models, including a frozen 22-model causal census. Computing an associated bilinear weight …",
+      "date": "2026-09-13",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.GN, cs.AI, cs.LG)",
+      "url": "http://arxiv.org/abs/2609.17599v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Portable Semantics, Private Dialects: Reuse and Negative Transfer in Latent Communication Between Language-Model Cells",
+      "authors": [
+        "Narcis Marincat"
+      ],
+      "abstract": "In shared-genome language-model societies, restricted evidence visibility favors reusable, value-indexed latent packet interfaces, whereas the sole high-performing globally visible model in the parent study learned an episode-entangled code. This companion study asks whether independently trained societies share one packet language, where strict zero-shot transfer fails, and whether inherited interface state helps or harms later learning. First, …",
+      "date": "2026-09-10",
+      "source": "arXiv",
+      "journal": "arXiv (cs.AI, cs.LG, cs.MA)",
+      "url": "http://arxiv.org/abs/2609.11365v1",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Sequence-Informed Geometric Evaluation of RNA 3D Structures",
+      "authors": [
+        "Andrea Zerio",
+        "Yighua Yao",
+        "Alessandro Micheli",
+        "Roland G. Huber",
+        "Mile Sikic",
+        "Samir Bhatt"
+      ],
+      "abstract": "Computational RNA structure pipelines generate many candidate conformations for the same sequence. Reliable evaluation therefore requires more than recognising plausible geometry, it requires determining whether that geometry is compatible with the sequence. We introduce SIRGE, a sequence-informed geometric evaluator that conditions structural representations on nucleotide embeddings from a pretrained RNA language model. Early results show that S…",
+      "date": "2026-09-09",
+      "source": "arXiv",
+      "journal": "arXiv (q-bio.BM, cs.LG)",
+      "url": "http://arxiv.org/abs/2609.10644v1",
+      "tags": [
+        "DNA",
+        "RNA",
+        "구조 예측"
+      ]
+    },
+    {
+      "title": "Predicting genome-wide functional constraints with GPN-Star.",
+      "authors": [
+        "Ye Chengzhong",
+        "Benegas Gonzalo",
+        "Albors Carlos",
+        "Li Jianan Canal",
+        "Prillo Sebastian",
+        "Fields Peter D"
+      ],
+      "abstract": "Genomic language models have emerged as a powerful approach for learning genome-wide functional constraints directly from DNA sequences1. However, standard genomic language models adapted from natural language processing often require large model sizes and computational resources, yet still fall short of classical evolutionary models in predictive tasks2-4. Here we introduce a genomic pretrained network with species tree and alignment representat…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Nature",
+      "url": "https://doi.org/10.1038/s41586-026-11005-5",
+      "tags": [
+        "DNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "Jingjing Zhai and Edward S. Buckler.",
+      "authors": [
+        "Zhai Jingjing",
+        "Buckler Edward S"
+      ],
+      "abstract": "Dr. Laura Zahn asked the authors, Dr. Jingjing Zhai and Dr. Edward (Ed) S. Buckler, to tell us about their research relating to their Cell Genomics paper, \"PlantCAD2: A DNA foundation model for interpreting genomes across flowering plants.\"",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Cell genomics",
+      "url": "https://doi.org/10.1016/j.xgen.2026.101360",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "PlantCAD2: A DNA foundation model for interpreting genomes across flowering plants.",
+      "authors": [
+        "Zhai Jingjing",
+        "Gokaslan Aaron",
+        "Hsu Sheng-Kai",
+        "Chen Szu-Ping",
+        "Liu Zong-Yan",
+        "Marroquin Edgar"
+      ],
+      "abstract": "Flowering plants (angiosperms) exhibit extraordinary species diversity, ∼200-fold variation in genome size, and relatively compact coding regions, presenting both a unique challenge and opportunity for DNA language models. Here, we introduce PlantCAD2, an extended-context, plant-specific DNA language model with single-nucleotide resolution, pre-trained on 65 angiosperm genomes, together with a series of public benchmarks for evaluation. Comprehen…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Cell genomics",
+      "url": "https://doi.org/10.1016/j.xgen.2026.101329",
+      "tags": [
+        "DNA",
+        "단백질",
+        "유전자 발현",
+        "에피게놈"
+      ]
+    },
+    {
+      "title": "iEnhancer-Flow: Integrating Transformer-Based Sequence Learning with DNA Shape Insights for Robust Enhancer Prediction.",
+      "authors": [
+        "Liu Huan",
+        "Luo Hanyu",
+        "Luo Lingyun",
+        "Ding Pingjian"
+      ],
+      "abstract": "PURPOSE: Enhancers are critical non-coding regulatory elements, but their prediction remains challenging due to their variability and the absence of clear sequence motifs. This study aims to promote enhancer classification through a novel framework integrating DNA sequence and shape features, addressing the limitations of sequence-only models and improving prediction performance across diverse genomic contexts. METHODS: We propose iEnhancer-Flow,…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Interdisciplinary sciences, computational life sciences",
+      "url": "https://doi.org/10.1007/s12539-025-00787-3",
+      "tags": [
+        "DNA",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "GenART: Reading the genome's language with adaptive \"words\".",
+      "authors": [
+        "Chen Kehan",
+        "Han Ping",
+        "Lin Zhe",
+        "Gao Shang",
+        "Yang Xinyu",
+        "Zeng Xiangxiang"
+      ],
+      "abstract": "Tokenization is both a prerequisite and a central challenge for genomic language models, due to the inherent difficulty of delineating meaningful segments within continuous DNA sequences. We present GenART, a genomic language model framework that dynamically segments DNA into variable-length words directly from raw sequences without manual annotation. Its key adaptive tokenization module infers biologically meaningful boundaries from multi-scale …",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Cell reports methods",
+      "url": "https://doi.org/10.1016/j.crmeth.2026.101516",
+      "tags": [
+        "DNA",
+        "에피게놈"
+      ]
+    },
+    {
+      "title": "GLM-Prior: a genomic language model for transferable sequence-derived priors in gene regulatory network inference.",
+      "authors": [
+        "Skok Gibbs Claudia",
+        "Chen Angelica",
+        "Bonneau Richard",
+        "Cho Kyunghyun"
+      ],
+      "abstract": "Gene regulatory network inference depends on high-quality prior knowledge, yet curated priors are often incomplete or unavailable across species and cell types. We present GLM-Prior, a genomic language model fine-tuned to predict transcription factor-target gene interactions from nucleotide sequence. We integrate GLM-Prior with PMF-GRN in a dual-stage pipeline that combines sequence-derived priors with single-cell expression data for prior-condit…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Nature communications",
+      "url": "https://doi.org/10.1038/s41467-026-77381-8",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "A reference genome without a virus: cDNA reconstruction reveals the provenance and function of the MS2 phage sequence.",
+      "authors": [
+        "Small Eric",
+        "Lasley Greyson",
+        "Layton Emily",
+        "Wiwi Alissa",
+        "Del Curto Devyn",
+        "Weinstock Laura D"
+      ],
+      "abstract": "Reference genomes are often treated as faithful representations of experimentally validated viral genomes, yet the relationship between historically curated reference sequences and infectivity is rarely tested experimentally. Here, we developed a cDNA-based reconstruction platform for the canonical RNA phage MS2 and used it to compare the current NCBI reference genome (RefSeq) with closely related published isolate sequences. We found that isolat…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "bioRxiv : the preprint server for biology",
+      "url": "https://doi.org/10.64898/2026.09.18.752701",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "A unified benchmark of supervised and retrieval-based methods for viral genomic sequence classification.",
+      "authors": [
+        "Fahmy Ahmed M",
+        "Ayad Melissa",
+        "Ahmed Hassan M"
+      ],
+      "abstract": "The rapid growth of genomic sequencing demands fast, accurate, and scalable analysis methods. In viral genomic classification, expanding labeled reference collections can make supervised models costly to update and dependent on fixed label sets, motivating retrieval-based genomic classification as a simpler, more flexible alternative. We present a unified benchmark of supervised and retrieval-based methods for viral genomic sequence classificatio…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Scientific reports",
+      "url": "https://doi.org/10.1038/s41598-026-67272-9",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "Genomic language model-based genomic prediction in plant breeding.",
+      "authors": [
+        "Alagarasan Ganesan",
+        "Li Huihui",
+        "Xu Yunbi",
+        "Crossa José",
+        "Varshney Rajeev K"
+      ],
+      "abstract": "Genomic prediction based on molecular markers has substantially advanced genomic selection; however, prediction accuracy often plateaus despite continued increases in marker density and methodological refinement. This saturation limits the effective use of available genomic information. The emergence of genomic language models (GLMs) offers a new framework for incorporating richer sequence-based information into genomic prediction, potentially ca…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Trends in plant science",
+      "url": "https://doi.org/10.1016/j.tplants.2026.04.012",
+      "tags": [
+        "DNA"
+      ]
+    },
+    {
+      "title": "Evaluating Sequence Foundation Models for Insect Olfactory Gene Discovery: Failure Modes, Evidence Standards, and a Benchmark Agenda.",
+      "authors": [
+        "Li Huiqin",
+        "Zhou Dian",
+        "Pu Wei",
+        "Wu Guoxing",
+        "Xiao Chun",
+        "Gao Xi"
+      ],
+      "abstract": "Genome-scale searches for insect olfactory genes are vulnerable to rapid receptor divergence, tandem duplication, fragmented gene models, circular labels, and evolutionary leakage between training and test data. Sequence foundation models trained on DNA or proteins may extend homology-based annotation, but available evidence does not support their use as autonomous annotators or direct predictors of sensory function. This critical review organize…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Insects",
+      "url": "https://doi.org/10.3390/insects17090928",
+      "tags": [
+        "DNA",
+        "단백질",
+        "구조 예측"
+      ]
+    },
+    {
+      "title": "Sequence optimization targeting mRNA stability enhances monoclonal antibody titers in CHO cells.",
+      "authors": [
+        "Schneckener Sebastian",
+        "Haag Kathrina",
+        "Leweke Samuel",
+        "Wolf Timo",
+        "Mayer-Bartschmid Anke"
+      ],
+      "abstract": "This study presents a DNA sequence optimization approach that integrates mRNA stability as a tunable design parameter to enhance monoclonal antibody expression in Chinese hamster ovary (CHO) cells. A comprehensive combinatorial library of synonymous coding-sequence variants of an IgG1 light chain was integrated as single copies at a defined genomic locus in CHO cells with identical regulatory elements. Steady-state mRNA abundance, quantified by d…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "New biotechnology",
+      "url": "https://doi.org/10.1016/j.nbt.2026.09.004",
+      "tags": [
+        "DNA",
+        "RNA",
+        "단백질",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "GLIMP: An Integrated Graph Neural Network-Large Language Model for Promoter Recognition.",
+      "authors": [
+        "Ma Haitao",
+        "Jia He",
+        "Yuan Chenning",
+        "Yu Changyong",
+        "Zhao Yuhai",
+        "Mao Keming"
+      ],
+      "abstract": "Accurate identification of DNA promoter regions is crucial for understanding gene regulation, yet remains challenging. Existing models often struggle to generalize across species or promoter types due to their inability to model functional degeneracy and capture subtle regulatory signals. To address this, we propose GLIMP, a novel promoter classification framework that integrates a large-scale genomic language model with Graph Neural Networks (GN…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "IEEE transactions on computational biology and bioinformatics",
+      "url": "https://doi.org/10.1109/TCBBIO.2026.3735721",
+      "tags": [
+        "DNA",
+        "유전자 발현"
+      ]
+    },
+    {
+      "title": "Known QAC determinants outperform genome language model embeddings in a leakage-aware public Listeria benzalkonium chloride tolerance benchmark.",
+      "authors": [
+        "Montefusco-Pereira Carlos Victor"
+      ],
+      "abstract": "Whole-genome sequencing and pretrained DNA models may help prioritize disinfectant-tolerance hypotheses, but phenotype prediction requires measured, isolate-linked labels and evaluation that keeps related lineages apart. We compared conventional sequence features, numerical DNA representations generated by DNABERT2, and known quaternary ammonium compound (QAC) determinants in a public benchmark of 197 Listeria monocytogenes isolates with benzalko…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "FEMS microbiology letters",
+      "url": "https://doi.org/10.1093/femsle/fnag112",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "BFPSM: A biological language model-based framework for pathogenic synonymous mutation prediction.",
+      "authors": [
+        "Chen Hai",
+        "Yang Siyuan",
+        "Ye Chen",
+        "Wang Chenlong",
+        "Xia Junfeng",
+        "Cheng Na"
+      ],
+      "abstract": "Accurate prediction of pathogenic synonymous mutations is essential for advancing precision medicine. To address this challenge, we propose BFPSM, a deep learning framework that systematically integrates heterogeneous biological language models for pathogenic synonymous mutations prediction based on sequences only. Specifically, BFPSM extracts embeddings from three DNA language models and one RNA language model to capture evolutionary conservatio…",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Computational biology and chemistry",
+      "url": "https://doi.org/10.1016/j.compbiolchem.2026.109432",
+      "tags": [
+        "DNA",
+        "RNA",
+        "스플라이싱",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "Harnessing the Power of Large Language Models for Drug Discovery: A Systematic Review of Current Applications and Future Directions.",
+      "authors": [
+        "Wal Pranay",
+        "Shukla Manmohan",
+        "Sachan Kritika",
+        "Wal Ankita",
+        "Chellammal Hanish Singh Jayasingh",
+        "Tiwari Mohit"
+      ],
+      "abstract": "INTRODUCTION: The demand for inventive approaches to drug discovery has increased due to the rising costs, time, and failure rates in pharmaceutical research. Large Language Models (LLMs), with their sophisticated natural language processing and generative capabilities, have become potent instruments that have the potential to revolutionize biomedical research. The function of LLMs in different phases of drug development is methodically examined …",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "Current computer-aided drug design",
+      "url": "https://doi.org/10.2174/0115734099432517260829135754",
+      "tags": [
+        "DNA",
+        "단백질",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "LAMBDA: a prophage detection benchmark for genomic language models.",
+      "authors": [
+        "Lindsey LeAnn M",
+        "Pershing Nicole L",
+        "Dufault-Thompson Keith",
+        "Gwak Ho-Jin",
+        "Habib Anisa",
+        "Schindler Aaron"
+      ],
+      "abstract": "Transformer-based genomic sequence models represent an emerging frontier in computational biology. Yet, their embeddings have not yet shown the same level of predictive power as natural and protein language models, highlighting a gap between current implementations and theoretical promise. Existing benchmarks for DNA language models primarily focus on classifying regulatory elements in eukaryotic genomes, leaving open the fundamental question of …",
+      "date": "2026-09-01",
+      "source": "PubMed",
+      "journal": "NAR genomics and bioinformatics",
+      "url": "https://doi.org/10.1093/nargab/lqag103",
+      "tags": [
+        "DNA",
+        "단백질",
+        "SSM"
+      ]
+    },
+    {
+      "title": "Pathway Modeling of Genomic and Tissue-Specific Transcriptomic Architecture Identifies Personalized Mechanisms of Atrial Fibrillation Risk",
+      "authors": [
+        "Venkatesh",
+        "R.",
+        "Deo",
+        "R.",
+        "Cappola",
+        "T."
+      ],
+      "abstract": "Atrial fibrillation (AF) is the most common sustained cardiac arrhythmia and a major cause of cardioembolic stroke. Although polygenic risk scores (PRS) are well characterized to quantify inherited susceptibility for AF, they provide limited insight into the pathways and tissues underlying genetic risk, which are critical to uncover for individual risk prediction. In this study, we develop a pathway-level multi-omics representation learning frame…",
+      "date": "2026-08-31",
+      "source": "medrxiv",
+      "journal": "Medrxiv preprint",
+      "url": "https://doi.org/10.64898/2026.08.25.26361369",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과"
+      ]
+    },
+    {
+      "title": "GRASSP: RNA language model-enhanced graph attention with adaptive gating for RNA-small molecule binding site prediction.",
+      "authors": [
+        "Nguyen Thi Lan",
+        "Le Nguyen Quoc Khanh"
+      ],
+      "abstract": "MOTIVATION: RNA-small molecule binding site prediction is crucial for targeted drug discovery. Sequence-based methods are efficient but often fail to capture structural dependencies between nucleotides, whereas structure-aware graph models can better represent spatial interactions but typically rely on complex structural annotations and multi-stage preprocessing pipelines. We therefore developed GRASSP, a streamlined hybrid deep learning framewor…",
+      "date": "2026-08-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag638",
+      "tags": [
+        "DNA",
+        "RNA"
+      ]
+    },
+    {
+      "title": "Deciphering the comprehensive relationship between 5' UTR and 3' UTR sequences with deep learning.",
+      "authors": [
+        "Suga Kanta",
+        "Yamada Keisuke",
+        "Hamada Michiaki"
+      ],
+      "abstract": "MOTIVATION: Recent advances in mRNA therapeutics have driven further research on the untranslated regions (UTRs) of mRNA. However, prior studies have mainly focused on either the 5' or 3' UTR individually. Increasing evidence suggests potential cooperative effects between these two regions, which remain largely unexplored in computational studies. RESULTS: We present a deep learning-based approach to predicting relationships between 5' and 3' UTR…",
+      "date": "2026-08-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag634",
+      "tags": [
+        "RNA"
+      ]
+    },
+    {
+      "title": "Genomic language model for predicting enhancers and their allele-specific activity in the human genome.",
+      "authors": [
+        "Sathian Rekha",
+        "Dutta Pratik",
+        "Ay Ferhat",
+        "Davuluri Ramana V"
+      ],
+      "abstract": "MOTIVATION: Predicting and deciphering the regulatory logic of enhancers remains a significant challenge due to their complex sequence features and the absence of consistent genetic or epigenetic signatures that distinguish them from other genomic regions. Existing machine learning methods capture nucleotide composition but often fail to model sequence context effectively. RESULTS: We present DNABERT-Enhancer, a novel enhancer prediction method, …",
+      "date": "2026-08-01",
+      "source": "PubMed",
+      "journal": "Bioinformatics (Oxford, England)",
+      "url": "https://doi.org/10.1093/bioinformatics/btag456",
+      "tags": [
+        "DNA",
+        "RNA",
+        "변이 효과",
+        "유전자 발현"
+      ]
+    },
     {
       "title": "VESTIGE: A Knowledge-Guided Masking Strategy for Corruption-Aware Fine-Tuning of Genomic Transformers, Validated on Ancient DNA Reconstruction",
       "authors": [
@@ -265,26 +833,6 @@
       ]
     },
     {
-      "title": "GenART: Reading the genome's language with adaptive \"words\".",
-      "authors": [
-        "Chen Kehan",
-        "Han Ping",
-        "Lin Zhe",
-        "Gao Shang",
-        "Yang Xinyu",
-        "Zeng Xiangxiang"
-      ],
-      "abstract": "Tokenization is both a prerequisite and a central challenge for genomic language models, due to the inherent difficulty of delineating meaningful segments within continuous DNA sequences. We present GenART, a genomic language model framework that dynamically segments DNA into variable-length words directly from raw sequences without manual annotation. Its key adaptive tokenization module infers biologically meaningful boundaries from multi-scale …",
-      "date": "2026-07-01",
-      "source": "PubMed",
-      "journal": "Cell reports methods",
-      "url": "https://doi.org/10.1016/j.crmeth.2026.101516",
-      "tags": [
-        "DNA",
-        "에피게놈"
-      ]
-    },
-    {
       "title": "Prediction of DNA N4-Methylcytosine Sites Based on a Position-Aligned Multi-branch Fusion Network.",
       "authors": [
         "Wang Hangyi",
@@ -429,26 +977,6 @@
       ]
     },
     {
-      "title": "Interpreting embeddings from genome and protein language models.",
-      "authors": [
-        "May Luke E",
-        "White Jacob B",
-        "Roell Garrett W"
-      ],
-      "abstract": "Following advances in the field of natural language processing related to the transformer and the attention mechanism, many large language models have been trained using DNA and protein databases. While these models are designed for next-token prediction with the goal of generating novel sequences, researchers have found that the intermediate representations, or embeddings, of the DNA and amino acid sequences as they pass through these models can…",
-      "date": "2026-06-01",
-      "source": "PubMed",
-      "journal": "Biotechnology advances",
-      "url": "https://doi.org/10.1016/j.biotechadv.2026.108945",
-      "tags": [
-        "DNA",
-        "단백질",
-        "스플라이싱",
-        "변이 효과",
-        "CRISPR"
-      ]
-    },
-    {
       "title": "Graphylo Var: Predicting the impact of non-coding variants using a multi-species sequence model.",
       "authors": [
         "Lim Dongjoon",
@@ -537,24 +1065,6 @@
       "tags": [
         "DNA",
         "SSM"
-      ]
-    },
-    {
-      "title": "Genomic language model-based genomic prediction in plant breeding.",
-      "authors": [
-        "Alagarasan Ganesan",
-        "Li Huihui",
-        "Xu Yunbi",
-        "Crossa José",
-        "Varshney Rajeev K"
-      ],
-      "abstract": "Genomic prediction based on molecular markers has substantially advanced genomic selection; however, prediction accuracy often plateaus despite continued increases in marker density and methodological refinement. This saturation limits the effective use of available genomic information. The emergence of genomic language models (GLMs) offers a new framework for incorporating richer sequence-based information into genomic prediction, potentially ca…",
-      "date": "2026-05-01",
-      "source": "PubMed",
-      "journal": "Trends in plant science",
-      "url": "https://doi.org/10.1016/j.tplants.2026.04.012",
-      "tags": [
-        "DNA"
       ]
     },
     {
